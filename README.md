@@ -1,0 +1,1 @@
+Desenvolvimento de um sistema de gerenciamento de achados e perdidos no ambiente universitário, capaz de armazenar e gerenciar informações sobre itens perdidos e encontrados, permitindo o rastreamento, a correspondência entre itens e usuários e o controle de devoluções. 
