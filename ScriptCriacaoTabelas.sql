@@ -56,7 +56,7 @@ CREATE TABLE Localizacao(
 );
 
 CREATE TABLE Postagem(
-	id_post SERIAL PRIMARY KEy,
+	id_post SERIAL PRIMARY KEY,
 	cpf VARCHAR(14),
 	FOREIGN KEY (cpf) REFERENCES Usuario(cpf) ON DELETE RESTRICT,
 	id_localizacao INT,
