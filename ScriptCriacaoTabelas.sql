@@ -15,7 +15,7 @@ CREATE TABLE Usuario(
 	nome VARCHAR(150) NOT NULL,
 	email VARCHAR(100) UNIQUE,
 	registro_institucional VARCHAR(10), -- mat/siape
-	tipo_usuario BOOLEAN, -- aluno, professor e servidor
+	tipo_usuario BOOLEAN, -- aluno, professor e servidor, tipo de acesso ao sistema por usuário. (MAT ou SIAPE)
 	telefone VARCHAR(15) -- 11 no formato sem parenteses, hifem e espaco
 );
 
