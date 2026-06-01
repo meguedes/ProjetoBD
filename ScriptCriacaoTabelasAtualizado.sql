@@ -15,7 +15,7 @@ CREATE TABLE Usuario(
     nome VARCHAR(150) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     registro_institucional VARCHAR(20),
-    tipo_usuario VARCHAR(20),
+    tipo_usuario BOOLEAN(20),
     telefone VARCHAR(15)
 );
 
