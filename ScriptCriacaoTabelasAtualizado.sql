@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Localizacao CASCADE;
 DROP TABLE IF EXISTS Campi CASCADE;
 DROP TABLE IF EXISTS Usuario CASCADE;
 
+-- 	Criação das tabelas
 CREATE TABLE Usuario(
     cpf VARCHAR(14) PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
@@ -125,3 +126,59 @@ CREATE TABLE Devolucao(
     FOREIGN KEY (cpf)
         REFERENCES Usuario(cpf)
 );
+
+-- CRUD (INSERT)
+
+INSERT INTO campi(nome_campi)
+VALUES ('Darcy Ribeiro');
+
+SELECT * FROM Campi;
+
+INSERT INTO categoria_objeto (nome_categoria) 
+VALUES ('Eletrônicos')
+ON CONFLICT DO NOTHING; -- Evitar erro se já existir 
+
+SELECT * FROM categoria_objeto;
+
+INSERT INTO objeto (nome_obj, id_categoria, cor, tamanho, descricao, foto_obj) 
+VALUES ('Garrafa ', 1, 'azul', '600ml', 'Garrafa azul de 600ml da marca Stanley', pg_read_binary_file('C:/Users/rafae/OneDrive/Imagens/garrafa-azul.webp')
+);
+
+INSERT INTO usuario (cpf, nome, email) 
+VALUES ('111.222.333-44', 'Rafael Henrique', 'rafael@unb.br');
+
+SELECT * FROM Usuario;
+
+-- UPDATE
+
+UPDATE Usuario 
+SET telefone = '61988889999', registro_institucional = 'Servidor' 
+WHERE cpf = '111.222.333-44';
+
+SELECT * FROM Usuario;
+
+UPDATE Campi 
+SET nome_campi = 'Darcy Ribeiro - Asa Norte' 
+WHERE id_campi = 1;
+
+SELECT * FROM Campi;
+
+UPDATE Objeto 
+SET cor = 'Grafite', descricao = 'Garrafa Stanley preta com arranhão na base' 
+WHERE id_obj = 1;
+
+SELECT * FROM Objeto;
+
+-- DELETE
+
+DELETE FROM Postagem 
+WHERE id_post = 1;
+
+SELECT * FROM Postagem;
+
+DELETE FROM Usuario 
+WHERE cpf = '111.222.333-44';
+
+SELECT * FROM Usuario;
+
+
