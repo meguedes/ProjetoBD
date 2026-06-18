@@ -140,9 +140,9 @@ ON CONFLICT DO NOTHING; -- Evitar erro se já existir
 
 SELECT * FROM categoria_objeto;
 
-INSERT INTO objeto (nome_obj, id_categoria, cor, tamanho, descricao, foto_obj) 
+/*INSERT INTO objeto (nome_obj, id_categoria, cor, tamanho, descricao, foto_obj) 
 VALUES ('Garrafa ', 1, 'azul', '600ml', 'Garrafa azul de 600ml da marca Stanley', pg_read_binary_file('C:/Users/rafae/OneDrive/Imagens/garrafa-azul.webp')
-);
+);*/
 
 INSERT INTO usuario (cpf, nome, email) 
 VALUES ('111.222.333-44', 'Rafael Henrique', 'rafael@unb.br');
