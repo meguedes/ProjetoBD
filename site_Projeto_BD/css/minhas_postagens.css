@@ -1,0 +1,58 @@
+/* Define a cor de fundo geral da página */
+body{
+    background:#f5f5f5;
+}
+
+/* Personaliza a barra de navegação com a cor institucional da UnB */
+.navbar-unb{
+    background:#003366;
+}
+
+/* Estilo dos cartões de postagem */
+.postagem-card{
+
+    /* Fundo branco para destacar o conteúdo */
+    background:white;
+
+    /* Arredonda os cantos do cartão */
+    border-radius:12px;
+
+    /* Espaçamento interno entre o conteúdo e as bordas */
+    padding:20px;
+
+    /* Espaçamento inferior entre os cartões */
+    margin-bottom:20px;
+
+    /* Sombra suave para dar efeito de profundidade */
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+/* Estilo para itens com status "Aberto" */
+.status-aberto{
+
+    /* Cor verde para indicar situação pendente */
+    color:green;
+
+    /* Texto em negrito */
+    font-weight:bold;
+}
+
+/* Estilo para itens com status "Resolvido" */
+.status-resolvido{
+
+    /* Cor azul para indicar conclusão */
+    color:#0d6efd;
+
+    /* Texto em negrito */
+    font-weight:bold;
+}
+
+/* Estilo para exibição da data da postagem */
+.postagem-data{
+
+    /* Cor cinza para informações secundárias */
+    color:gray;
+
+    /* Tamanho de fonte menor que o texto principal */
+    font-size:0.9rem;
+}

@@ -1,0 +1,81 @@
+/* =====================================================
+   SISTEMA UNB - ACHADOS E PERDIDOS
+   Estilos da Página de Perfil do Usuário
+===================================================== */
+
+/* -----------------------------------------------------
+   ESTILO GERAL DA PÁGINA
+------------------------------------------------------ */
+body{
+
+    /* Define uma cor de fundo cinza clara para
+       proporcionar melhor contraste com os cartões */
+    background:#f5f5f5;
+}
+
+/* -----------------------------------------------------
+   BARRA DE NAVEGAÇÃO PERSONALIZADA
+------------------------------------------------------ */
+.navbar-unb{
+
+    /* Cor azul institucional da Universidade de Brasília */
+    background:#003366;
+}
+
+/* -----------------------------------------------------
+   CARTÃO DE PERFIL
+------------------------------------------------------ */
+.perfil-card{
+
+    /* Define a largura máxima do cartão */
+    max-width:700px;
+
+    /* Centraliza horizontalmente na página */
+    margin:auto;
+
+    /* Remove a borda padrão do Bootstrap */
+    border:none;
+
+    /* Arredonda os cantos do cartão */
+    border-radius:15px;
+
+    /* Adiciona sombra para destacar o conteúdo */
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+/* -----------------------------------------------------
+   AVATAR DO USUÁRIO
+------------------------------------------------------ */
+.avatar{
+
+    /* Aumenta o tamanho do ícone ou emoji utilizado
+       como foto de perfil */
+    font-size:70px;
+}
+
+/* -----------------------------------------------------
+   BOTÃO PERSONALIZADO DA UNB
+------------------------------------------------------ */
+.btn-unb{
+
+    /* Cor verde institucional da UnB */
+    background:#00843D;
+
+    /* Cor do texto */
+    color:white;
+
+    /* Destaca o texto em negrito */
+    font-weight:bold;
+}
+
+/* -----------------------------------------------------
+   EFEITO HOVER DO BOTÃO
+------------------------------------------------------ */
+.btn-unb:hover{
+
+    /* Tom mais escuro para indicar interação */
+    background:#006B31;
+
+    /* Mantém o texto branco */
+    color:white;
+}

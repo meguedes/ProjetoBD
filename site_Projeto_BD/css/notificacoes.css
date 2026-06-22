@@ -1,0 +1,55 @@
+/* =====================================================
+   SISTEMA UNB - ACHADOS E PERDIDOS
+   Estilos da Página de Notificações
+===================================================== */
+
+/* -----------------------------------------------------
+   ESTILO GERAL DA PÁGINA
+------------------------------------------------------ */
+body{
+
+    /* Define uma cor de fundo cinza clara */
+    background:#f5f5f5;
+}
+
+/* -----------------------------------------------------
+   BARRA DE NAVEGAÇÃO PERSONALIZADA
+------------------------------------------------------ */
+.navbar-unb{
+
+    /* Azul institucional utilizado pela UnB */
+    background:#003366;
+}
+
+/* -----------------------------------------------------
+   CARD DE NOTIFICAÇÃO
+------------------------------------------------------ */
+.notificacao-card{
+
+    /* Cor de fundo branca */
+    background:white;
+
+    /* Espaçamento interno */
+    padding:15px;
+
+    /* Bordas arredondadas */
+    border-radius:10px;
+
+    /* Espaçamento entre notificações */
+    margin-bottom:15px;
+
+    /* Sombra para destacar o card */
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+/* -----------------------------------------------------
+   DATA DA NOTIFICAÇÃO
+------------------------------------------------------ */
+.data{
+
+    /* Cor cinza para informação secundária */
+    color:gray;
+
+    /* Tamanho reduzido para diferenciar do conteúdo */
+    font-size:0.8rem;
+}

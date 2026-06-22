@@ -1,0 +1,98 @@
+/* ===================================================== */
+/* ESTILO GERAL DA PÁGINA */
+/* Define a cor de fundo utilizada em toda a interface */
+/* ===================================================== */
+
+body{
+background:#f5f5f5;
+}
+
+/* ===================================================== */
+/* BARRA DE NAVEGAÇÃO */
+/* Utiliza a cor institucional da Universidade */
+/* ===================================================== */
+
+.navbar-unb{
+background:#003366;
+}
+
+/* ===================================================== */
+/* ÁREA PRINCIPAL DO CHAT */
+/* Container onde as mensagens são exibidas */
+/* ===================================================== */
+
+.chat-box{
+
+
+/* Fundo branco para destacar as mensagens */
+background:white;
+
+/* Cantos arredondados */
+border-radius:10px;
+
+/* Espaçamento interno */
+padding:20px;
+
+/* Altura mínima da área de conversa */
+min-height:400px;
+
+/* Sombra para destacar visualmente o chat */
+box-shadow:0 0 10px rgba(0,0,0,.1);
+
+/* Adiciona rolagem vertical quando houver
+   muitas mensagens */
+overflow-y:auto;
+
+
+}
+
+/* ===================================================== */
+/* ESTILO BASE DAS MENSAGENS */
+/* Aplicado tanto para mensagens enviadas quanto recebidas */
+/* ===================================================== */
+
+.mensagem{
+
+
+/* Espaçamento entre mensagens */
+margin-bottom:15px;
+
+/* Espaçamento interno da mensagem */
+padding:10px;
+
+/* Arredondamento das bordas */
+border-radius:10px;
+
+
+}
+
+/* ===================================================== */
+/* MENSAGENS RECEBIDAS */
+/* Exibidas quando outro usuário envia uma mensagem */
+/* ===================================================== */
+
+.recebida{
+
+
+/* Cor de fundo cinza claro */
+background:#e9ecef;
+
+
+}
+
+/* ===================================================== */
+/* MENSAGENS ENVIADAS */
+/* Exibidas quando o usuário logado envia uma mensagem */
+/* ===================================================== */
+
+.enviada{
+
+
+/* Cor de fundo verde claro */
+background:#d1e7dd;
+
+/* Alinhamento à direita */
+text-align:right;
+
+
+}

@@ -1,0 +1,70 @@
+/* =====================================================
+   ESTILOS DA PÁGINA DE LOGIN
+   Sistema UnB - Achados e Perdidos
+===================================================== */
+
+/* -----------------------------------------------------
+   ESTILO GERAL DA PÁGINA
+------------------------------------------------------ */
+body{
+    /* Define uma cor de fundo cinza clara para a página */
+    background-color:#f5f5f5;
+}
+
+/* -----------------------------------------------------
+   BARRA DE NAVEGAÇÃO PERSONALIZADA DA UNB
+------------------------------------------------------ */
+.navbar-unb{
+
+    /* Azul institucional da Universidade de Brasília */
+    background-color:#003366;
+}
+
+/* -----------------------------------------------------
+   CARD DE LOGIN
+------------------------------------------------------ */
+.card-login{
+
+    /* Define largura máxima do formulário */
+    max-width:450px;
+
+    /* Centraliza o card horizontalmente e adiciona
+       espaçamento superior e inferior */
+    margin:80px auto;
+
+    /* Remove a borda padrão */
+    border:none;
+
+    /* Arredonda os cantos do card */
+    border-radius:15px;
+
+    /* Adiciona sombra para dar profundidade */
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+/* -----------------------------------------------------
+   BOTÃO PERSONALIZADO DA UNB
+------------------------------------------------------ */
+.btn-unb{
+
+    /* Cor verde institucional */
+    background:#00843D;
+
+    /* Cor do texto */
+    color:white;
+
+    /* Deixa o texto em negrito */
+    font-weight:bold;
+}
+
+/* -----------------------------------------------------
+   EFEITO AO PASSAR O MOUSE SOBRE O BOTÃO
+------------------------------------------------------ */
+.btn-unb:hover{
+
+    /* Tom de verde mais escuro para indicar interação */
+    background:#006B31;
+
+    /* Mantém o texto branco */
+    color:white;
+}

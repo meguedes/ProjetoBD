@@ -1,0 +1,177 @@
+<!-- =====================================================
+     SISTEMA UNB - ACHADOS E PERDIDOS
+     Página de Login
+===================================================== -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ==================================================
+         CONFIGURAÇÕES BÁSICAS DA PÁGINA
+    =================================================== -->
+
+    <meta charset="UTF-8">
+
+    <!-- Responsividade para dispositivos móveis -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <!-- Título exibido na aba do navegador -->
+    <title>
+        UnB - Achados e Perdidos - Login
+    </title>
+
+    <!-- ==================================================
+         BOOTSTRAP
+         Framework CSS utilizado para layout e componentes
+    =================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- ==================================================
+         ARQUIVO CSS PERSONALIZADO
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="/css/login.css">
+
+    <!-- Espaço reservado para estilos internos -->
+    <style>
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ==================================================
+         BARRA DE NAVEGAÇÃO SUPERIOR
+    =================================================== -->
+
+    <nav class="navbar navbar-dark navbar-unb">
+
+        <div class="container">
+
+            <!-- Link para retornar à página inicial -->
+            <a
+                class="navbar-brand"
+                href="/html/index.html">
+
+                UnB - Achados e Perdidos
+
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- ==================================================
+         CONTAINER PRINCIPAL
+    =================================================== -->
+
+    <div class="container">
+
+        <!-- ==============================================
+             CARD DE LOGIN
+        =============================================== -->
+
+        <div class="card card-login">
+
+            <div class="card-body p-4">
+
+                <!-- Título do formulário -->
+                <h2 class="text-center mb-4">
+
+                    Entrar
+
+                </h2>
+
+                <!-- ======================================
+                     FORMULÁRIO DE LOGIN
+                ======================================= -->
+
+                <form id="loginForm">
+
+                    <!-- Campo de e-mail -->
+                    <div class="mb-3">
+
+                        <label>Email</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <!-- Campo de senha -->
+                    <div class="mb-3">
+
+                        <label>Senha</label>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            class="form-control"
+                            required>
+
+                    </div>
+
+                    <!-- Botão de envio -->
+                    <button
+                        type="submit"
+                        class="btn btn-unb w-100">
+
+                        Entrar
+
+                    </button>
+
+                </form>
+
+                <!-- Linha divisória -->
+                <hr>
+
+                <!-- Link para cadastro -->
+                <p class="text-center">
+
+                    Não possui conta?
+
+                    <a href="/hmtl/cadastro_usuario.html">
+
+                        Cadastre-se
+
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==================================================
+         SCRIPT DE LOGIN
+
+         Responsável por:
+         - Capturar os dados do formulário
+         - Validar credenciais
+         - Realizar autenticação
+         - Armazenar informações do usuário
+         - Redirecionar após login
+    =================================================== -->
+
+    <script src="/js/login.js"></script>
+
+</body>
+
+</html>
