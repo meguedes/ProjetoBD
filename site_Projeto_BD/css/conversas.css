@@ -12,9 +12,6 @@ background:#f5f5f5;
 /* Utiliza a cor institucional da Universidade */
 /* ===================================================== */
 
-.navbar-unb{
-background:#003366;
-}
 
 /* ===================================================== */
 /* ÁREA PRINCIPAL DO CHAT */
@@ -94,5 +91,31 @@ background:#d1e7dd;
 /* Alinhamento à direita */
 text-align:right;
 
+
+}
+
+/* ===================================================== */
+/* Caixa de conversa vazia */
+/* ===================================================== */
+
+.chat-box{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:40px;
+
+    min-height:400px;
+
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
 
 }

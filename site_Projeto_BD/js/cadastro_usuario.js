@@ -98,7 +98,7 @@ alert("Conta criada com sucesso!");
 // =====================================================
 
 // Após o cadastro, o usuário é enviado para a tela de login
-window.location.href = "login.html";
+window.location.href = "/html/login.html";
 
 
 });

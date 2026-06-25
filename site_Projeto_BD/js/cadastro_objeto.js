@@ -199,7 +199,7 @@ form.addEventListener("submit", function(event){
 
         alert("Faça login primeiro!");
 
-        window.location.href = "login.html";
+        window.location.href = "/html/login.html";
 
         return;
     }
@@ -282,27 +282,54 @@ form.addEventListener("submit", function(event){
     };
 
     // =====================================================
-    // RECUPERA POSTAGENS EXISTENTES
-    // =====================================================
+// RECUPERA POSTAGENS EXISTENTES
+// =====================================================
 
-    const postagens =
-    JSON.parse(
-        localStorage.getItem("postagens")
-    ) || [];
+const postagens =
+JSON.parse(
+    localStorage.getItem("postagens")
+) || [];
 
-    // Adiciona a nova postagem à lista
-    postagens.push(postagem);
+// Adiciona a nova postagem
+postagens.push(postagem);
 
-    // Salva novamente a lista atualizada
-    localStorage.setItem(
-        "postagens",
-        JSON.stringify(postagens)
-    );
+// Salva novamente as postagens
+localStorage.setItem(
+    "postagens",
+    JSON.stringify(postagens)
+);
 
-    // Informa sucesso ao usuário
-    alert("Objeto publicado com sucesso!");
+// =====================================================
+// CADASTRA UMA NOVA NOTIFICAÇÃO
+// =====================================================
 
-    // Redireciona para o feed principal
-    window.location.href = "index.html";
+// Recupera as notificações existentes
+const notificacoes =
+JSON.parse(
+    localStorage.getItem("notificacoes")
+) || [];
+
+// Adiciona a nova notificação
+notificacoes.unshift({
+
+    mensagem:
+        `Sua publicação "${postagem.nomeObjeto}" foi criada com sucesso.`,
+
+    data:
+        new Date().toLocaleString("pt-BR")
+
+});
+
+// Salva novamente as notificações
+localStorage.setItem(
+    "notificacoes",
+    JSON.stringify(notificacoes)
+);
+
+// Informa sucesso ao usuário
+alert("Objeto publicado com sucesso!");
+
+// Redireciona para o feed principal
+window.location.href = "/html/index.html";
 
 });

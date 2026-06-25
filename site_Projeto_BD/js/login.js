@@ -49,7 +49,7 @@ form.addEventListener("submit", function(event){
         alert("Login realizado com sucesso!");
 
         // Redireciona o usuário para a página de perfil
-        window.location.href = "perfil.html";
+        window.location.href = "/html/perfil.html";
 
     }else{
 

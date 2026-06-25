@@ -1,268 +1,330 @@
 // ======================================================
-// SISTEMA DE ACHADOS E PERDIDOS - IMPACTO CIRCULAR
+// SISTEMA UNB - ACHADOS E PERDIDOS
+// Página Inicial (Feed)
 // ======================================================
 
 // ------------------------------------------------------
-// 1. MASSA DE DADOS
+// 1. CARREGAMENTO DAS POSTAGENS
 // ------------------------------------------------------
-// Futuramente os dados poderão ser carregados do
-// LocalStorage. Enquanto isso, utilizamos um vetor
-// contendo exemplos de postagens para testes.
+// Recupera todas as postagens armazenadas no
+// LocalStorage.
+//
+// Futuramente os dados serão carregados do
+// PostgreSQL através do Flask.
 
-// const postagens = JSON.parse(
-//     localStorage.getItem("postagens")
-// ) || [];
+const postagens = JSON.parse(
+    localStorage.getItem("postagens")
+) || [];
 
-postagens = [
-
-    {
-        nomeObjeto: "Notebook Dell",
-
-        descricao:
-        "Notebook encontrado próximo ao ICC Norte.",
-
-        categoria: "Eletrônicos",
-
-        cor: "Preto",
-
-        tamanho: "Médio",
-
-        localizacao:
-        "Instituto Central de Ciências (ICC)",
-
-        tipo_postagem: "Encontrado",
-
-        status_postagem: "Aberto",
-
-        data_hora:
-        "21/06/2026 10:30",
-
-        usuario:
-        "Rafael Henrique",
-
-        foto:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853"
-    },
-
-    {
-        nomeObjeto: "Mochila Adidas",
-
-        descricao:
-        "Perdida próxima à Biblioteca Central.",
-
-        categoria: "Mochilas",
-
-        cor: "Azul",
-
-        tamanho: "Grande",
-
-        localizacao:
-        "Biblioteca Central (BCE)",
-
-        tipo_postagem: "Perdido",
-
-        status_postagem: "Aberto",
-
-        data_hora:
-        "20/06/2026 15:20",
-
-        usuario:
-        "Gabrielle",
-
-        foto:
-        "https://images.unsplash.com/photo-1581605405669-fcdf81165afa"
-    }
-
-];
-
-// Exibe as postagens no console para fins de depuração
 console.log(postagens);
 
 // ------------------------------------------------------
 // 2. REFERÊNCIAS AOS ELEMENTOS HTML
 // ------------------------------------------------------
 
-// Container onde as publicações serão exibidas
 const container =
 document.getElementById("container-feed");
 
-// Recupera os dados do usuário autenticado
 const usuarioLogado =
 JSON.parse(
     localStorage.getItem("usuarioLogado")
 );
 
-// Área da barra de navegação destinada ao usuário
 const areaUsuario =
 document.getElementById("areaUsuario");
 
 // ------------------------------------------------------
 // 3. VERIFICAÇÃO DE LOGIN
 // ------------------------------------------------------
-// Caso exista um usuário logado, exibe o botão
-// "Meu Perfil". Caso contrário, exibe "Entrar".
+// Exibe "Meu Perfil" quando existe um usuário
+// autenticado. Caso contrário, exibe o botão
+// para realizar login.
 
-if(usuarioLogado){
+if(areaUsuario){
 
-    areaUsuario.innerHTML = `
+    if(usuarioLogado){
 
-        <a
-            href="perfil.html"
-            class="btn btn-premium">
+        areaUsuario.innerHTML = `
 
-            Meu Perfil
+            <a
+                href="/html/perfil.html"
+                class="btn btn-premium">
 
-        </a>
+                Meu Perfil
 
-    `;
+            </a>
 
-}else{
+        `;
 
-    areaUsuario.innerHTML = `
+    }else{
 
-        <a
-            href="login.html"
-            class="btn btn-premium">
+        areaUsuario.innerHTML = `
 
-            Entrar
+            <a
+                href="/html/login.html"
+                class="btn btn-premium">
 
-        </a>
+                Entrar
 
-    `;
+            </a>
+
+        `;
+
+    }
 
 }
 
 // ------------------------------------------------------
-// 4. GERAÇÃO DINÂMICA DAS POSTAGENS
+// 4. DEFINE A COR DO STATUS
 // ------------------------------------------------------
-// Percorre todas as postagens e cria os cards
-// dinamicamente no feed.
-
-postagens.forEach(post => {
-
-    // Define quais botões serão exibidos
-    // dependendo do estado de autenticação.
-
-    const botoesUsuario =
-    usuarioLogado
-
-    ? `
-        <div class="mt-3">
-
-            <a
-                href="conversa.html"
-                class="btn btn-premium">
-
-                Conversar
-
-            </a>
-
-        </div>
-    `
-
-    : `
-        <div class="mt-3">
-
-            <a
-                href="login.html"
-                class="btn btn-premium">
-
-                Entrar para entrar em contato
-
-            </a>
-
-        </div>
-    `;
-
-    // Criação do card da publicação
-
-    container.innerHTML += `
-
-    <div class="premium-card">
-
-        <!-- Imagem do objeto -->
-        <img
-            src="${post.foto}"
-            class="feed-img">
-
-        <div class="card-overlay">
-
-            <!-- Tipo da postagem -->
-            <div>
-
-                <span class="glass-badge">
-
-                    ${post.tipo_postagem}
-
-                </span>
-
-            </div>
-
-            <!-- Informações da postagem -->
-            <div>
-
-                <h2 class="card-title">
-
-                    ${post.nomeObjeto}
-
-                </h2>
-
-                <p class="card-desc">
-
-                    ${post.descricao}
-
-                </p>
-
-                <p>📍 ${post.localizacao}</p>
-
-                <p>🏷️ ${post.categoria}</p>
-
-                <p>🎨 ${post.cor}</p>
-
-                <p>📏 ${post.tamanho}</p>
-
-                <p>📅 ${post.data_hora}</p>
-
-                <p>👤 ${post.usuario}</p>
-
-                <p>🟢 ${post.status_postagem}</p>
-
-                ${botoesUsuario}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-
-});
-
-// ------------------------------------------------------
-// 5. FUNÇÃO DE DEFINIÇÃO DE CORES POR STATUS
-// ------------------------------------------------------
-// Retorna uma cor associada ao estado atual da
-// postagem. Pode ser utilizada para estilizar
-// indicadores visuais de situação.
 
 function corStatus(status){
 
     switch(status){
 
         case "Aberto":
-            return "green";
+            return "limegreen";
 
         case "Em contato":
             return "orange";
 
         case "Resolvido":
-            return "blue";
+            return "deepskyblue";
 
         case "Devolvido":
-            return "purple";
+            return "violet";
 
         default:
             return "gray";
+
     }
+
 }
+
+// ------------------------------------------------------
+// 5. VERIFICA SE EXISTEM POSTAGENS
+// ------------------------------------------------------
+
+if(postagens.length === 0){
+
+    container.innerHTML = `
+
+        <div class="text-center py-5">
+
+            <h3>
+
+                📦 Nenhuma publicação encontrada
+
+            </h3>
+
+            <p class="text-light">
+
+                Ainda não existem objetos cadastrados.
+
+            </p>
+
+            <a
+                href="/html/cadastro_objeto.html"
+                class="btn btn-premium">
+
+                Publicar objeto
+
+            </a>
+
+        </div>
+
+    `;
+
+}else{
+
+    // --------------------------------------------------
+    // 6. GERAÇÃO DOS CARDS
+    // --------------------------------------------------
+
+    postagens.forEach(post =>{
+
+        let botoesUsuario;
+
+        // ----------------------------------------------
+        // Usuário não autenticado
+        // ----------------------------------------------
+
+        if(!usuarioLogado){
+
+            botoesUsuario = `
+
+                <div class="mt-3">
+
+                    <a
+                        href="/html/login.html"
+                        class="btn btn-premium">
+
+                        Entrar para entrar em contato
+
+                    </a>
+
+                </div>
+
+            `;
+
+        // ----------------------------------------------
+        // Publicação do próprio usuário
+        // ----------------------------------------------
+
+        }else if(post.cpf === usuarioLogado.cpf){
+
+            botoesUsuario = `
+
+                <div class="mt-3">
+
+                    <a
+                        href="/html/minhas_postagens.html"
+                        class="btn btn-premium">
+
+                        Gerenciar publicação
+
+                    </a>
+
+                </div>
+
+            `;
+
+        // ----------------------------------------------
+        // Publicação de outro usuário
+        // ----------------------------------------------
+
+        }else{
+
+            botoesUsuario = `
+
+                <div class="mt-3">
+
+                    <a
+                        href="/html/conversas.html"
+                        class="btn btn-premium">
+
+                        Conversar
+
+                    </a>
+
+                </div>
+
+            `;
+
+        }
+
+        // ----------------------------------------------
+        // Criação do card da postagem
+        // ----------------------------------------------
+
+        container.innerHTML += `
+
+            <div class="premium-card">
+
+                <img
+                    src="${post.foto}"
+                    class="feed-img"
+                    alt="${post.nomeObjeto}">
+
+                <div class="card-overlay">
+
+                    <div>
+
+                        <span class="glass-badge">
+
+                            ${post.tipo_postagem}
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="card-title">
+
+                            ${post.nomeObjeto}
+
+                        </h2>
+
+                        <p class="card-desc">
+
+                            ${post.descricao}
+
+                        </p>
+
+                        <p>📍 ${post.localizacao}</p>
+
+                        <p>🏷️ ${post.categoria}</p>
+
+                        <p>🎨 ${post.cor}</p>
+
+                        <p>📏 ${post.tamanho}</p>
+
+                        <p>📅 ${post.data_hora}</p>
+
+                        <p>👤 ${post.usuario}</p>
+
+                        <p
+                            style="
+                                color:${corStatus(post.status_postagem)};
+                                font-weight:bold;
+                            ">
+
+                            ● ${post.status_postagem}
+
+                        </p>
+
+                        ${botoesUsuario}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+// ------------------------------------------------------
+// FUNCIONAMENTO DO SISTEMA
+// ------------------------------------------------------
+//
+// 1. Recupera as postagens do LocalStorage.
+//
+// 2. Verifica se existe um usuário autenticado.
+//
+// 3. Caso não existam publicações,
+//    é exibida uma mensagem informativa.
+//
+// 4. Para cada postagem é criado um card
+//    contendo:
+//
+//      - Foto;
+//      - Tipo da postagem;
+//      - Nome do objeto;
+//      - Descrição;
+//      - Localização;
+//      - Categoria;
+//      - Cor;
+//      - Tamanho;
+//      - Data;
+//      - Nome do responsável;
+//      - Status.
+//
+// 5. Os botões variam conforme a situação:
+//
+//      • Não autenticado:
+//        "Entrar para entrar em contato"
+//
+//      • Dono da publicação:
+//        "Gerenciar publicação"
+//
+//      • Outro usuário:
+//        "Conversar"
+//
+// Futuramente as publicações serão carregadas
+// diretamente do PostgreSQL através do Flask.
+// ------------------------------------------------------

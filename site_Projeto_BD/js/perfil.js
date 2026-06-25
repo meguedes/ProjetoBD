@@ -13,7 +13,7 @@ if (!usuario) {
 
     alert("Faça login primeiro!");
 
-    window.location.href = "login.html";
+    window.location.href = "/html/login.html";
 
 } else {
 
@@ -46,6 +46,37 @@ document.getElementById("btnSair")
     localStorage.removeItem("usuarioLogado");
 
     // Retorna para a página inicial
-    window.location.href = "index.html";
+    window.location.href = "/html/index.html";
 
 });
+
+// ======================================
+// ESTATÍSTICAS DO PERFIL
+// ======================================
+
+// Postagens
+const postagens = JSON.parse(
+    localStorage.getItem("postagens")
+) || [];
+
+// Notificações
+const notificacoes = JSON.parse(
+    localStorage.getItem("notificacoes")
+) || [];
+
+// Quantidade total de postagens
+document.getElementById("qtdPostagens").textContent =
+postagens.length;
+
+// Quantidade de objetos devolvidos
+const devolvidos = postagens.filter(post =>
+    post.status_postagem === "Devolvido"
+);
+
+document.getElementById("qtdDevolvidos").textContent =
+devolvidos.length;
+
+// Quantidade de notificações
+document.getElementById("qtdNotificacoes").textContent =
+notificacoes.length;
+

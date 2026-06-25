@@ -40,11 +40,8 @@
     <link
         rel="stylesheet"
         href="/css/login.css">
+    <link rel="stylesheet" href="/css/navbar.css">
 
-    <!-- Espaço reservado para estilos internos -->
-    <style>
-
-    </style>
 
 </head>
 
@@ -56,14 +53,21 @@
 
     <nav class="navbar navbar-dark navbar-unb">
 
-        <div class="container">
+        <div class="container position-relative">
 
-            <!-- Link para retornar à página inicial -->
-            <a
-                class="navbar-brand"
-                href="/html/index.html">
+            <a href="/html/index.html"
+            class="d-flex align-items-center justify-content-center text-decoration-none w-100">
 
-                UnB - Achados e Perdidos
+                <img
+                    src="/logo_unb.png"
+                    class="unb-logo-nav"
+                    alt="Logo UnB">
+
+                <span class="nav-brand-text text-white ms-2">
+
+                    UnB - Achados e Perdidos
+
+                </span>
 
             </a>
 
@@ -145,7 +149,7 @@
 
                     Não possui conta?
 
-                    <a href="/hmtl/cadastro_usuario.html">
+                    <a href="/html/cadastro_usuario.html">
 
                         Cadastre-se
 

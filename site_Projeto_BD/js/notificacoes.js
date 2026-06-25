@@ -4,42 +4,43 @@
 // ======================================================
 
 // ------------------------------------------------------
-// 1. MASSA DE DADOS
+// 1. VERIFICAÇÃO DE AUTENTICAÇÃO
 // ------------------------------------------------------
-// Vetor que armazena as notificações do usuário.
-// Cada objeto representa uma notificação exibida
-// na central de notificações.
+// Recupera os dados do usuário armazenados no
+// LocalStorage. Caso não exista um usuário
+// autenticado, o acesso à página é bloqueado
+// e o usuário é redirecionado para a tela de login.
 
-const notificacoes = [
+const usuario = JSON.parse(
+    localStorage.getItem("usuarioLogado")
+);
 
-{
-    mensagem:
-    "Você recebeu uma mensagem sobre Notebook Dell.",
+if(!usuario){
 
-    data:
-    "Há 10 minutos"
-},
+    alert("Faça login para acessar suas notificações.");
 
-{
-    mensagem:
-    "Seu objeto foi marcado como encontrado.",
+    window.location.href = "/html/login.html";
 
-    data:
-    "Há 2 horas"
-},
-
-{
-    mensagem:
-    "Sua conta foi autenticada.",
-
-    data:
-    "Ontem"
 }
 
-];
+// ------------------------------------------------------
+// 2. CARREGAMENTO DAS NOTIFICAÇÕES
+// ------------------------------------------------------
+// Recupera as notificações armazenadas no
+// LocalStorage.
+//
+// Futuramente estas informações serão obtidas
+// do banco de dados PostgreSQL através do Flask.
+//
+// Caso ainda não existam notificações,
+// um vetor vazio será utilizado.
+
+const notificacoes = JSON.parse(
+    localStorage.getItem("notificacoes")
+) || [];
 
 // ------------------------------------------------------
-// 2. REFERÊNCIA AO ELEMENTO HTML
+// 3. REFERÊNCIA AO ELEMENTO HTML
 // ------------------------------------------------------
 // Obtém o container onde as notificações serão
 // exibidas dinamicamente.
@@ -48,66 +49,104 @@ const container =
 document.getElementById("listaNotificacoes");
 
 // ------------------------------------------------------
-// 3. EXIBIÇÃO DAS NOTIFICAÇÕES
+// 4. VERIFICA SE EXISTEM NOTIFICAÇÕES
 // ------------------------------------------------------
-// Percorre o vetor de notificações e cria um card
-// para cada item encontrado.
+// Caso o usuário ainda não possua notificações,
+// é exibida uma mensagem informativa indicando
+// que novas atividades aparecerão futuramente.
 
-notificacoes.forEach(notificacao => {
+if(notificacoes.length === 0){
 
-    // Adiciona uma nova notificação ao conteúdo
-    // já existente dentro do container.
+    container.innerHTML = `
 
-    container.innerHTML += `
-    
-    <div class="notificacao-card">
+        <div class="text-center text-muted py-5">
 
-        <!-- Mensagem principal da notificação -->
-        <p>
+            <h4>
 
-            ${notificacao.mensagem}
+                🔔 Nenhuma notificação
 
-        </p>
+            </h4>
 
-        <!-- Data ou tempo relativo da notificação -->
-        <span class="data">
+            <p>
 
-            ${notificacao.data}
+                Quando houver novas mensagens,
+                alterações nas suas publicações
+                ou outras atividades importantes,
+                elas aparecerão aqui.
 
-        </span>
+            </p>
 
-    </div>
+        </div>
 
     `;
 
-});
+}else{
+
+    // --------------------------------------------------
+    // 5. EXIBIÇÃO DAS NOTIFICAÇÕES
+    // --------------------------------------------------
+    // Percorre todas as notificações armazenadas
+    // e cria dinamicamente um card para cada uma.
+
+    notificacoes.forEach(notificacao =>{
+
+        container.innerHTML += `
+
+            <div class="notificacao-card">
+
+                <!-- Mensagem da notificação -->
+                <p>
+
+                    ${notificacao.mensagem}
+
+                </p>
+
+                <!-- Data ou horário da ocorrência -->
+                <span class="data">
+
+                    ${notificacao.data}
+
+                </span>
+
+            </div>
+
+        `;
+
+    });
+
+}
 
 // ------------------------------------------------------
 // FUNCIONAMENTO DO SISTEMA
 // ------------------------------------------------------
-// 1. As notificações são armazenadas no vetor
-//    "notificacoes".
 //
-// 2. O elemento HTML "listaNotificacoes" é utilizado
-//    para exibir as informações na tela.
+// 1. O sistema verifica se existe um usuário
+//    autenticado no LocalStorage.
 //
-// 3. O método forEach() percorre cada notificação.
+// 2. Caso o usuário não esteja logado,
+//    o acesso à página é bloqueado e ele é
+//    redirecionado para a tela de login.
 //
-// 4. Para cada item é criado um card contendo:
-//      - Mensagem da notificação;
-//      - Data ou horário da ocorrência.
+// 3. As notificações são carregadas do
+//    LocalStorage.
 //
-// 5. Os cards são inseridos dinamicamente na página
-//    utilizando a propriedade innerHTML.
+// 4. Se não houver notificações cadastradas,
+//    é exibida uma mensagem informando que
+//    nenhuma atividade foi encontrada.
 //
-// Exemplos de notificações:
-// - Nova mensagem recebida;
-// - Objeto encontrado;
-// - Alteração de status;
-// - Confirmação de cadastro;
-// - Atualizações da conta.
+// 5. Caso existam notificações, cada uma
+//    é exibida dinamicamente na página.
 //
-// Dessa forma, o usuário pode acompanhar todas as
-// atividades relacionadas aos seus objetos e à sua
-// conta dentro do sistema.
+// Futuramente:
+//
+// - As notificações serão recuperadas do
+//   PostgreSQL através do Flask;
+// - Novas mensagens recebidas;
+// - Alterações de status das postagens;
+// - Confirmações de devolução;
+// - Outras atividades importantes do sistema.
+//
+// Dessa forma, a página já está preparada
+// para a integração com o backend sem a
+// necessidade de alterações na interface.
 // ------------------------------------------------------

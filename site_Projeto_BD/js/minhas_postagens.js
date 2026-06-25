@@ -1,114 +1,81 @@
 // ======================================================
-// SISTEMA UNB - ACHADOS E PERDIDOS
-// Página de Gerenciamento de Postagens
+// MINHAS POSTAGENS
 // ======================================================
 
-// ------------------------------------------------------
-// 1. MASSA DE DADOS
-// ------------------------------------------------------
-// Vetor contendo exemplos de publicações cadastradas
-// pelo usuário. Cada objeto representa um item
-// perdido ou encontrado.
+// Recupera as postagens salvas
+let postagens = JSON.parse(
+    localStorage.getItem("postagens")
+) || [];
 
-const postagens = [
-
-{
-    objeto: "Notebook Dell",
-
-    local: "Biblioteca Central",
-
-    data: "21/06/2026 19:20",
-
-    status: "Aberto"
-},
-
-{
-    objeto: "Mochila Azul",
-
-    local: "ICC Sul",
-
-    data: "20/06/2026 08:15",
-
-    status: "Resolvido"
-},
-
-{
-    objeto: "Garrafa Stanley",
-
-    local: "FT",
-
-    data: "19/06/2026 17:40",
-
-    status: "Aberto"
-}
-
-];
-
-// ------------------------------------------------------
-// 2. REFERÊNCIA AO ELEMENTO HTML
-// ------------------------------------------------------
-// Container onde as postagens serão exibidas.
-
+// Container da página
 const container =
 document.getElementById("listaPostagens");
 
-// ------------------------------------------------------
-// 3. GERAÇÃO DINÂMICA DAS POSTAGENS
-// ------------------------------------------------------
-// Percorre o vetor de postagens e cria os cards
-// dinamicamente na página.
+// Caso não existam postagens
+if(postagens.length === 0){
 
-postagens.forEach(post => {
+    container.innerHTML = `
 
-    // Define a classe CSS do status
-    // de acordo com a situação da postagem.
+        <div class="alert alert-info">
+
+            Você ainda não possui publicações.
+
+        </div>
+
+    `;
+
+}
+
+// Exibe as postagens
+postagens.forEach((post, index) => {
 
     const classeStatus =
 
-        post.status === "Aberto"
+        post.status_postagem === "Aberto"
 
         ? "status-aberto"
 
         : "status-resolvido";
 
-    // Adiciona o card da postagem ao container.
-
     container.innerHTML += `
 
     <div class="postagem-card">
 
-        <!-- Nome do objeto -->
-        <h4>${post.objeto}</h4>
+        <h4>${post.nomeObjeto}</h4>
 
-        <!-- Local onde o objeto foi encontrado ou perdido -->
         <p>
-            📍 ${post.local}
+            📍 ${post.localizacao}
         </p>
 
-        <!-- Data da publicação -->
         <p class="postagem-data">
-            📅 ${post.data}
+            📅 ${post.data_hora}
         </p>
 
-        <!-- Status atual da postagem -->
         <p class="${classeStatus}">
-            ${post.status}
+            ${post.status_postagem}
         </p>
 
-        <!-- Botão para acessar conversas relacionadas -->
         <a
-            href="conversa.html"
+            href="/html/conversas.html"
             class="btn btn-primary">
 
             Ver Conversas
 
         </a>
 
-        <!-- Botão para atualizar o status do objeto -->
         <button
-            class="btn btn-success ms-2">
+            class="btn btn-success ms-2"
+            onclick="marcarDevolvido(${index})">
 
             Marcar como Devolvido
+
+        </button>
+
+        <button
+            class="btn btn-danger ms-2"
+            onclick="excluirPostagem(${index})">
+
+            Excluir
 
         </button>
 
@@ -118,26 +85,53 @@ postagens.forEach(post => {
 
 });
 
-// ------------------------------------------------------
-// FUNCIONAMENTO DO SISTEMA
-// ------------------------------------------------------
-// 1. O vetor "postagens" armazena os dados das publicações.
-// 2. O elemento "listaPostagens" recebe os cards gerados.
-// 3. O método forEach percorre todas as postagens.
-// 4. Para cada item é criado um card contendo:
-//      - Nome do objeto
-//      - Localização
-//      - Data
-//      - Status
-//      - Botão para visualizar conversas
-//      - Botão para marcar devolução
-// 5. A classe CSS do status muda automaticamente
-//    conforme o valor armazenado na postagem.
-//
-// Exemplo:
-// "Aberto"    -> status-aberto
-// "Resolvido" -> status-resolvido
-//
-// Isso permite aplicar estilos visuais diferentes
-// para cada situação da publicação.
-// ------------------------------------------------------
+// ======================================================
+// MARCAR COMO DEVOLVIDO
+// ======================================================
+
+function marcarDevolvido(index){
+
+    let postagens = JSON.parse(
+        localStorage.getItem("postagens")
+    ) || [];
+
+    postagens[index].status_postagem =
+    "Devolvido";
+
+    localStorage.setItem(
+        "postagens",
+        JSON.stringify(postagens)
+    );
+
+    location.reload();
+}
+
+// ======================================================
+// EXCLUIR POSTAGEM
+// ======================================================
+
+function excluirPostagem(index){
+
+    const confirmar = confirm(
+        "Deseja realmente excluir esta publicação?"
+    );
+
+    if(!confirmar){
+        return;
+    }
+
+    let postagens = JSON.parse(
+        localStorage.getItem("postagens")
+    ) || [];
+
+    postagens.splice(index, 1);
+
+    localStorage.setItem(
+        "postagens",
+        JSON.stringify(postagens)
+    );
+
+    alert("Publicação excluída com sucesso!");
+
+    location.reload();
+}

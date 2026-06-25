@@ -4,9 +4,6 @@ body{
 }
 
 /* Personaliza a barra de navegação com a cor institucional da UnB */
-.navbar-unb{
-    background:#003366;
-}
 
 /* Estilo dos cartões de postagem */
 .postagem-card{

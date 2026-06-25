@@ -3,16 +3,7 @@ body{
     background-color:#f5f5f5;
 }
 
-/* Cor da barra de navegação da UnB */
-.navbar-unb{
-    background-color:#003366;
-}
 
-/* Tamanho da logo da UnB na navbar */
-.logo-unb{
-    width:40px;
-    margin-right:10px;
-}
 
 /* Card principal do formulário */
 .card-form{

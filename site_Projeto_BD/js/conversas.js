@@ -1,19 +1,19 @@
-// Vetor que armazena as mensagens iniciais do chat
-const mensagens = [
 
-{
-    usuario: "Rafael",
-    texto: "Olá! Acho que encontrei seu notebook.",
-    tipo: "recebida" // Mensagem recebida de outro usuário
-},
+//autenticação do usuario
+const usuario = JSON.parse(
+    localStorage.getItem("usuarioLogado")
+);
 
-{
-    usuario: "Você",
-    texto: "Sério? Onde ele está?",
-    tipo: "enviada" // Mensagem enviada pelo usuário
+if (!usuario) {
+
+    alert("Faça login para acessar suas conversas.");
+
+    window.location.href = "/html/login.html";
+
 }
 
-];
+// Vetor que armazena as mensagens iniciais do chat
+const mensagens = [];
 
 // Obtém a referência da área onde as mensagens serão exibidas
 const chatBox = document.getElementById("chatBox");
@@ -22,26 +22,50 @@ const chatBox = document.getElementById("chatBox");
  * Função responsável por carregar e exibir todas as mensagens
  * armazenadas no vetor "mensagens".
  */
-function carregarMensagens() {
+function carregarMensagens(){
 
-    // Limpa o conteúdo atual do chat antes de recarregar as mensagens
     chatBox.innerHTML = "";
 
-    // Percorre todas as mensagens do vetor
-    mensagens.forEach(msg => {
+    if(mensagens.length === 0){
 
-        // Adiciona cada mensagem ao conteúdo HTML do chat
+        chatBox.innerHTML = `
+
+            <div class="text-center text-muted mt-5">
+
+                <h4>
+
+                    Nenhuma conversa encontrada
+
+                </h4>
+
+                <p>
+
+                    Quando alguém entrar em contato
+                    sobre um objeto publicado,
+                    a conversa aparecerá aqui.
+
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    mensagens.forEach(msg=>{
+
         chatBox.innerHTML += `
 
-        <div class="mensagem ${msg.tipo}">
+            <div class="mensagem ${msg.tipo}">
 
-            <strong>${msg.usuario}</strong>
+                <strong>${msg.usuario}</strong>
 
-            <br>
+                <br>
 
-            ${msg.texto}
+                ${msg.texto}
 
-        </div>
+            </div>
 
         `;
 
