@@ -72,6 +72,9 @@ SELECT
     tipo_usuario
 FROM Usuario;
 
+-- Delete porque estava dando problema de duplicidade de PK
+DELETE FROM Usuario WHERE cpf = '123.456.789-00';
+
 -- Teste da procedure
 CALL proc_cadastrar_usuario(
     '123.456.789-00',
