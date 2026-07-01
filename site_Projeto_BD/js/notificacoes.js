@@ -24,23 +24,7 @@ if(!usuario){
 }
 
 // ------------------------------------------------------
-// 2. CARREGAMENTO DAS NOTIFICAÇÕES
-// ------------------------------------------------------
-// Recupera as notificações armazenadas no
-// LocalStorage.
-//
-// Futuramente estas informações serão obtidas
-// do banco de dados PostgreSQL através do Flask.
-//
-// Caso ainda não existam notificações,
-// um vetor vazio será utilizado.
-
-const notificacoes = JSON.parse(
-    localStorage.getItem("notificacoes")
-) || [];
-
-// ------------------------------------------------------
-// 3. REFERÊNCIA AO ELEMENTO HTML
+// 2. REFERÊNCIA AO ELEMENTO HTML
 // ------------------------------------------------------
 // Obtém o container onde as notificações serão
 // exibidas dinamicamente.
@@ -49,44 +33,54 @@ const container =
 document.getElementById("listaNotificacoes");
 
 // ------------------------------------------------------
-// 4. VERIFICA SE EXISTEM NOTIFICAÇÕES
+// 3. CARREGAMENTO DAS NOTIFICAÇÕES (via API)
 // ------------------------------------------------------
-// Caso o usuário ainda não possua notificações,
-// é exibida uma mensagem informativa indicando
-// que novas atividades aparecerão futuramente.
+// Busca as notificações do usuário logado diretamente
+// no banco de dados PostgreSQL através da API Flask.
 
-if(notificacoes.length === 0){
+async function carregarNotificacoes(){
 
-    container.innerHTML = `
+    const resposta = await fetch(
+        `${API_BASE}/notificacoes/${encodeURIComponent(usuario.cpf)}`
+    );
 
-        <div class="text-center text-muted py-5">
+    const notificacoes = await resposta.json();
 
-            <h4>
+    // Caso o usuário ainda não possua notificações,
+    // é exibida uma mensagem informativa.
 
-                🔔 Nenhuma notificação
+    if(notificacoes.length === 0){
 
-            </h4>
+        container.innerHTML = `
 
-            <p>
+            <div class="text-center text-muted py-5">
 
-                Quando houver novas mensagens,
-                alterações nas suas publicações
-                ou outras atividades importantes,
-                elas aparecerão aqui.
+                <h4>
 
-            </p>
+                    🔔 Nenhuma notificação
 
-        </div>
+                </h4>
 
-    `;
+                <p>
 
-}else{
+                    Quando houver novas mensagens,
+                    alterações nas suas publicações
+                    ou outras atividades importantes,
+                    elas aparecerão aqui.
 
-    // --------------------------------------------------
-    // 5. EXIBIÇÃO DAS NOTIFICAÇÕES
-    // --------------------------------------------------
-    // Percorre todas as notificações armazenadas
-    // e cria dinamicamente um card para cada uma.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    // Percorre todas as notificações e cria
+    // dinamicamente um card para cada uma.
+
+    container.innerHTML = "";
 
     notificacoes.forEach(notificacao =>{
 
@@ -115,6 +109,8 @@ if(notificacoes.length === 0){
     });
 
 }
+
+carregarNotificacoes();
 
 // ------------------------------------------------------
 // FUNCIONAMENTO DO SISTEMA

@@ -10,7 +10,7 @@ const form = document.getElementById("cadastroForm");
 // =====================================================
 
 // Executa quando o usuário clica no botão "Criar Conta"
-form.addEventListener("submit", function(event){
+form.addEventListener("submit", async function(event){
 
 
 // Impede o comportamento padrão do formulário
@@ -76,29 +76,41 @@ const usuario = {
 };
 
 // =====================================================
-// ARMAZENAMENTO TEMPORÁRIO DOS DADOS
+// ENVIO DOS DADOS PARA A API (PERSISTÊNCIA NO POSTGRESQL)
 // =====================================================
 
-// Salva o objeto usuário no Local Storage do navegador.
-// Futuramente estes dados serão persistidos no PostgreSQL.
-localStorage.setItem(
-    "usuario",
-    JSON.stringify(usuario)
-);
+try {
 
-// =====================================================
-// CONFIRMAÇÃO DE CADASTRO
-// =====================================================
+    const resposta = await fetch(`${API_BASE}/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(usuario)
+    });
 
-// Informa ao usuário que a conta foi criada com sucesso
-alert("Conta criada com sucesso!");
+    const dados = await resposta.json();
 
-// =====================================================
-// REDIRECIONAMENTO PARA LOGIN
-// =====================================================
+    if(!resposta.ok){
+        alert(dados.erro || "Não foi possível criar a conta.");
+        return;
+    }
 
-// Após o cadastro, o usuário é enviado para a tela de login
-window.location.href = "/html/login.html";
+    // =====================================================
+    // CONFIRMAÇÃO DE CADASTRO
+    // =====================================================
+
+    alert("Conta criada com sucesso!");
+
+    // =====================================================
+    // REDIRECIONAMENTO PARA LOGIN
+    // =====================================================
+
+    window.location.href = "/html/login.html";
+
+} catch(erro){
+
+    alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
+
+}
 
 
 });

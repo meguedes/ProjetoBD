@@ -40,7 +40,21 @@ if (!usuario) {
 
 // Evento do botão "Sair"
 document.getElementById("btnSair")
-.addEventListener("click", function () {
+.addEventListener("click", async function () {
+
+    // Avisa a API para encerrar a sessão no banco
+    // (permite que a notificação de login volte a disparar)
+    if(usuario){
+        try {
+            await fetch(`${API_BASE}/logout`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cpf: usuario.cpf })
+            });
+        } catch(erro){
+            // segue o logout mesmo se a API estiver fora do ar
+        }
+    }
 
     // Remove os dados da sessão
     localStorage.removeItem("usuarioLogado");
@@ -51,32 +65,38 @@ document.getElementById("btnSair")
 });
 
 // ======================================
-// ESTATÍSTICAS DO PERFIL
+// ESTATÍSTICAS DO PERFIL (via API)
 // ======================================
 
-// Postagens
-const postagens = JSON.parse(
-    localStorage.getItem("postagens")
-) || [];
+async function carregarEstatisticas(){
 
-// Notificações
-const notificacoes = JSON.parse(
-    localStorage.getItem("notificacoes")
-) || [];
+    if(!usuario) return;
 
-// Quantidade total de postagens
-document.getElementById("qtdPostagens").textContent =
-postagens.length;
+    const [respPostagens, respNotificacoes] = await Promise.all([
+        fetch(`${API_BASE}/postagens?cpf=${encodeURIComponent(usuario.cpf)}`),
+        fetch(`${API_BASE}/notificacoes/${encodeURIComponent(usuario.cpf)}`)
+    ]);
 
-// Quantidade de objetos devolvidos
-const devolvidos = postagens.filter(post =>
-    post.status_postagem === "Devolvido"
-);
+    const postagens = await respPostagens.json();
+    const notificacoes = await respNotificacoes.json();
 
-document.getElementById("qtdDevolvidos").textContent =
-devolvidos.length;
+    // Quantidade total de postagens
+    document.getElementById("qtdPostagens").textContent =
+    postagens.length;
 
-// Quantidade de notificações
-document.getElementById("qtdNotificacoes").textContent =
-notificacoes.length;
+    // Quantidade de objetos devolvidos
+    const devolvidos = postagens.filter(post =>
+        post.status_postagem === "Devolvido"
+    );
+
+    document.getElementById("qtdDevolvidos").textContent =
+    devolvidos.length;
+
+    // Quantidade de notificações
+    document.getElementById("qtdNotificacoes").textContent =
+    notificacoes.length;
+
+}
+
+carregarEstatisticas();
 

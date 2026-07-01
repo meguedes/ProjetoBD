@@ -183,7 +183,7 @@ localizacaoSelect.addEventListener("change", function(){
 const form = document.getElementById("cadastroObjetoForm");
 
 // Executa quando o usuário clica em Publicar Objeto
-form.addEventListener("submit", function(event){
+form.addEventListener("submit", async function(event){
 
     // Impede o envio padrão do formulário
     event.preventDefault();
@@ -205,131 +205,38 @@ form.addEventListener("submit", function(event){
     }
 
     // =====================================================
-    // CRIAÇÃO DO OBJETO POSTAGEM
-    // Estrutura semelhante à tabela Postagem do banco.
+    // ENVIO DO FORMULÁRIO (COM FOTO) PARA A API
+    // multipart/form-data permite enviar o arquivo binário
+    // junto com os demais campos do objeto/postagem.
     // =====================================================
 
-    const postagem = {
+    const dadosForm = new FormData(form);
+    dadosForm.append("cpf", usuario.cpf);
 
-        // CPF do usuário que realizou a postagem
-        cpf: usuario.cpf,
+    try {
 
-        // Nome do objeto
-        nomeObjeto:
-        document.querySelector(
-            '[name="nome_objeto"]'
-        ).value,
+        const resposta = await fetch(`${API_BASE}/postagens`, {
+            method: "POST",
+            body: dadosForm
+        });
 
-        // Cor do objeto
-        cor:
-        document.querySelector(
-            '[name="cor"]'
-        ).value,
+        const dados = await resposta.json();
 
-        // Tamanho do objeto
-        tamanho:
-        document.querySelector(
-            '[name="tamanho"]'
-        ).value,
+        if(!resposta.ok){
+            alert(dados.erro || "Não foi possível publicar o objeto.");
+            return;
+        }
 
-        // Descrição detalhada
-        descricao:
-        document.querySelector(
-            '[name="descricao"]'
-        ).value,
+        // Informa sucesso ao usuário
+        alert("Objeto publicado com sucesso!");
 
-        // Categoria selecionada
-        categoria:
-        document.querySelector(
-            '[name="categoria"]'
-        ).value,
+        // Redireciona para o feed principal
+        window.location.href = "/html/index.html";
 
-        // Tipo da postagem
-        // Perdido ou Encontrado
-        tipo_postagem:
-        document.querySelector(
-            '[name="tipo_postagem"]'
-        ).value,
+    } catch(erro){
 
-        // Campus selecionado
-        campus:
-        document.querySelector(
-            '[name="campus"]'
-        ).value,
+        alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
 
-        // Local informado
-        localizacao:
-        document.querySelector(
-            '[name="localizacao"]'
-        ).value,
-
-        // Nome do usuário responsável pela postagem
-        usuario:
-        usuario.nome,
-
-        // Status inicial da postagem
-        status_postagem:
-        "Aberto",
-
-        // Data e hora de criação
-        data_hora:
-        new Date().toLocaleString("pt-BR"),
-
-        // Foto selecionada pelo usuário
-        foto:
-        preview.src
-
-    };
-
-    // =====================================================
-// RECUPERA POSTAGENS EXISTENTES
-// =====================================================
-
-const postagens =
-JSON.parse(
-    localStorage.getItem("postagens")
-) || [];
-
-// Adiciona a nova postagem
-postagens.push(postagem);
-
-// Salva novamente as postagens
-localStorage.setItem(
-    "postagens",
-    JSON.stringify(postagens)
-);
-
-// =====================================================
-// CADASTRA UMA NOVA NOTIFICAÇÃO
-// =====================================================
-
-// Recupera as notificações existentes
-const notificacoes =
-JSON.parse(
-    localStorage.getItem("notificacoes")
-) || [];
-
-// Adiciona a nova notificação
-notificacoes.unshift({
-
-    mensagem:
-        `Sua publicação "${postagem.nomeObjeto}" foi criada com sucesso.`,
-
-    data:
-        new Date().toLocaleString("pt-BR")
-
-});
-
-// Salva novamente as notificações
-localStorage.setItem(
-    "notificacoes",
-    JSON.stringify(notificacoes)
-);
-
-// Informa sucesso ao usuário
-alert("Objeto publicado com sucesso!");
-
-// Redireciona para o feed principal
-window.location.href = "/html/index.html";
+    }
 
 });

@@ -2,106 +2,136 @@
 // MINHAS POSTAGENS
 // ======================================================
 
-// Recupera as postagens salvas
-let postagens = JSON.parse(
-    localStorage.getItem("postagens")
-) || [];
+// Recupera o usuário logado
+const usuarioLogado = JSON.parse(
+    localStorage.getItem("usuarioLogado")
+);
 
 // Container da página
 const container =
 document.getElementById("listaPostagens");
 
-// Caso não existam postagens
-if(postagens.length === 0){
+if(!usuarioLogado){
 
-    container.innerHTML = `
+    alert("Faça login primeiro!");
 
-        <div class="alert alert-info">
-
-            Você ainda não possui publicações.
-
-        </div>
-
-    `;
+    window.location.href = "/html/login.html";
 
 }
 
-// Exibe as postagens
-postagens.forEach((post, index) => {
+// ======================================================
+// CARREGA AS POSTAGENS DO USUÁRIO LOGADO (via API)
+// ======================================================
 
-    const classeStatus =
+async function carregarPostagens(){
 
-        post.status_postagem === "Aberto"
+    const resposta = await fetch(
+        `${API_BASE}/postagens?cpf=${encodeURIComponent(usuarioLogado.cpf)}`
+    );
 
-        ? "status-aberto"
+    const postagens = await resposta.json();
 
-        : "status-resolvido";
+    // Caso não existam postagens
+    if(postagens.length === 0){
 
-    container.innerHTML += `
+        container.innerHTML = `
 
-    <div class="postagem-card">
+            <div class="alert alert-info">
 
-        <h4>${post.nomeObjeto}</h4>
+                Você ainda não possui publicações.
 
-        <p>
-            📍 ${post.localizacao}
-        </p>
+            </div>
 
-        <p class="postagem-data">
-            📅 ${post.data_hora}
-        </p>
+        `;
 
-        <p class="${classeStatus}">
-            ${post.status_postagem}
-        </p>
+        return;
+    }
 
-        <a
-            href="/html/conversas.html"
-            class="btn btn-primary">
+    container.innerHTML = "";
 
-            Ver Conversas
+    // Exibe as postagens
+    postagens.forEach(post => {
 
-        </a>
+        const classeStatus =
 
-        <button
-            class="btn btn-success ms-2"
-            onclick="marcarDevolvido(${index})">
+            post.status_postagem === "Aberto" || post.status_postagem === "Aberta"
 
-            Marcar como Devolvido
+            ? "status-aberto"
 
-        </button>
+            : "status-resolvido";
 
-        <button
-            class="btn btn-danger ms-2"
-            onclick="excluirPostagem(${index})">
+        container.innerHTML += `
 
-            Excluir
+        <div class="postagem-card">
 
-        </button>
+            <h4>${post.nomeObjeto}</h4>
 
-    </div>
+            <p>
+                📍 ${post.localizacao}
+            </p>
 
-    `;
+            <p class="postagem-data">
+                📅 ${post.data_hora}
+            </p>
 
-});
+            <p class="${classeStatus}">
+                ${post.status_postagem}
+            </p>
+
+            <a
+                href="/html/conversas.html"
+                class="btn btn-primary">
+
+                Ver Conversas
+
+            </a>
+
+            <button
+                class="btn btn-success ms-2"
+                onclick="marcarDevolvido(${post.id_post})">
+
+                Marcar como Devolvido
+
+            </button>
+
+            <button
+                class="btn btn-danger ms-2"
+                onclick="excluirPostagem(${post.id_post})">
+
+                Excluir
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+carregarPostagens();
 
 // ======================================================
 // MARCAR COMO DEVOLVIDO
 // ======================================================
 
-function marcarDevolvido(index){
+async function marcarDevolvido(idPost){
 
-    let postagens = JSON.parse(
-        localStorage.getItem("postagens")
-    ) || [];
-
-    postagens[index].status_postagem =
-    "Devolvido";
-
-    localStorage.setItem(
-        "postagens",
-        JSON.stringify(postagens)
+    const resposta = await fetch(
+        `${API_BASE}/postagens/${idPost}/devolver`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cpf: usuarioLogado.cpf })
+        }
     );
+
+    if(!resposta.ok){
+        const dados = await resposta.json();
+        alert(dados.erro || "Não foi possível marcar como devolvido.");
+        return;
+    }
 
     location.reload();
 }
@@ -110,7 +140,7 @@ function marcarDevolvido(index){
 // EXCLUIR POSTAGEM
 // ======================================================
 
-function excluirPostagem(index){
+async function excluirPostagem(idPost){
 
     const confirmar = confirm(
         "Deseja realmente excluir esta publicação?"
@@ -120,16 +150,16 @@ function excluirPostagem(index){
         return;
     }
 
-    let postagens = JSON.parse(
-        localStorage.getItem("postagens")
-    ) || [];
-
-    postagens.splice(index, 1);
-
-    localStorage.setItem(
-        "postagens",
-        JSON.stringify(postagens)
+    const resposta = await fetch(
+        `${API_BASE}/postagens/${idPost}?cpf=${encodeURIComponent(usuarioLogado.cpf)}`,
+        { method: "DELETE" }
     );
+
+    if(!resposta.ok){
+        const dados = await resposta.json();
+        alert(dados.erro || "Não foi possível excluir a publicação.");
+        return;
+    }
 
     alert("Publicação excluída com sucesso!");
 

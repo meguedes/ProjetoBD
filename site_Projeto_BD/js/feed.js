@@ -6,17 +6,13 @@
 // ------------------------------------------------------
 // 1. CARREGAMENTO DAS POSTAGENS
 // ------------------------------------------------------
-// Recupera todas as postagens armazenadas no
-// LocalStorage.
-//
-// Futuramente os dados serão carregados do
-// PostgreSQL através do Flask.
+// Recupera todas as postagens diretamente da API,
+// que consulta a view vw_feed_completo no PostgreSQL.
 
-const postagens = JSON.parse(
-    localStorage.getItem("postagens")
-) || [];
-
-console.log(postagens);
+async function buscarPostagens(){
+    const resposta = await fetch(`${API_BASE}/postagens`);
+    return resposta.json();
+}
 
 // ------------------------------------------------------
 // 2. REFERÊNCIAS AOS ELEMENTOS HTML
@@ -83,6 +79,7 @@ function corStatus(status){
     switch(status){
 
         case "Aberto":
+        case "Aberta":
             return "limegreen";
 
         case "Em contato":
@@ -102,8 +99,12 @@ function corStatus(status){
 }
 
 // ------------------------------------------------------
-// 5. VERIFICA SE EXISTEM POSTAGENS
+// 5. RENDERIZAÇÃO DO FEED
 // ------------------------------------------------------
+
+async function renderizarFeed(){
+
+const postagens = await buscarPostagens();
 
 if(postagens.length === 0){
 
@@ -287,6 +288,10 @@ if(postagens.length === 0){
     });
 
 }
+
+}
+
+renderizarFeed();
 
 // ------------------------------------------------------
 // FUNCIONAMENTO DO SISTEMA

@@ -2,7 +2,7 @@
 const form = document.getElementById("loginForm");
 
 // Adiciona um evento que será executado quando o formulário for enviado
-form.addEventListener("submit", function(event){
+form.addEventListener("submit", async function(event){
 
     // Impede o comportamento padrão do formulário
     // (recarregar a página ao enviar)
@@ -16,30 +16,27 @@ form.addEventListener("submit", function(event){
     const senhaDigitada =
         document.getElementById("senha").value;
 
-    // Recupera os dados do usuário armazenados no localStorage
-    // e converte de JSON para objeto JavaScript
-    const usuario = JSON.parse(
-        localStorage.getItem("usuario")
-    );
+    try {
 
-    // Verifica se existe algum usuário cadastrado
-    if(!usuario){
+        // Consulta a API, que valida as credenciais no PostgreSQL
+        const resposta = await fetch(`${API_BASE}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: emailDigitado,
+                senha: senhaDigitada
+            })
+        });
 
-        // Exibe mensagem de aviso
-        alert("Nenhum usuário cadastrado!");
+        const usuario = await resposta.json();
 
-        // Encerra a execução da função
-        return;
-    }
+        if(!resposta.ok){
+            alert(usuario.erro || "Email ou senha inválidos!");
+            return;
+        }
 
-    // Verifica se o email e a senha digitados
-    // correspondem aos dados cadastrados
-    if(
-        emailDigitado === usuario.email &&
-        senhaDigitada === usuario.senha
-    ){
-
-        // Salva o usuário como logado no localStorage
+        // Salva o usuário logado no localStorage
+        // (apenas cache local da sessão, não é a fonte de verdade)
         localStorage.setItem(
             "usuarioLogado",
             JSON.stringify(usuario)
@@ -51,10 +48,9 @@ form.addEventListener("submit", function(event){
         // Redireciona o usuário para a página de perfil
         window.location.href = "/html/perfil.html";
 
-    }else{
+    } catch(erro){
 
-        // Exibe mensagem caso os dados estejam incorretos
-        alert("Email ou senha inválidos!");
+        alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
 
     }
 
