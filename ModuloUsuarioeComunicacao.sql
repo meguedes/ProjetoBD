@@ -41,7 +41,7 @@ BEGIN
 
     INSERT INTO Notificacao(
         cpf,
-        mensagem_notificacao,
+        mensagem,
         status_leitura
     )
     VALUES(
@@ -62,6 +62,7 @@ AFTER INSERT ON Usuario
 FOR EACH ROW
 EXECUTE FUNCTION fn_notificar_novo_usuario();
 
+DROP VIEW IF EXISTS vw_perfil_publico;
 -- Visualização do perfil público
 CREATE OR REPLACE VIEW vw_perfil_publico AS
 SELECT
@@ -69,13 +70,33 @@ SELECT
     email,
     telefone,
     registro_institucional,
-    tipo_usuario
+    tipo_usuario AS esta_autenticado
 FROM Usuario;
 
 -- Delete porque estava dando problema de duplicidade de PK
 DELETE FROM Usuario WHERE cpf = '123.456.789-00';
 
--- Teste da procedure
+-- Limpeza de objetos excluídos (CRUD - DELETE)
+-- Trigger
+CREATE OR REPLACE FUNCTION fn_deletar_objeto_orfao()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM public.objeto 
+    WHERE id_obj = OLD.id_obj;
+    
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Vinculação do Trigger na tabela Postagem
+DROP TRIGGER IF EXISTS tg_limpar_objeto_orfao ON public.postagem;
+
+CREATE TRIGGER tg_limpar_objeto_orfao
+AFTER DELETE ON public.postagem
+FOR EACH ROW
+EXECUTE FUNCTION fn_deletar_objeto_orfao();
+
+/*-- Teste da procedure
 CALL proc_cadastrar_usuario(
     '123.456.789-00',
     'Ana Costa',
@@ -86,8 +107,22 @@ CALL proc_cadastrar_usuario(
     '61999998888'
 );
 
--- Teste da view
-SELECT * FROM vw_perfil_publico;
-
 -- Teste das notificações
 SELECT * FROM Notificacao;
+-- 2° teste
+SELECT 
+    u.cpf,
+    u.nome AS nome_usuario,
+    n.id_notificacao,
+    n.mensagem AS notificacao,
+    n.status_leitura
+FROM public.usuario u
+JOIN public.notificacao n ON u.cpf = n.cpf
+ORDER BY u.nome ASC;
+
+--Teste dado binario
+SELECT * FROM public.objeto ORDER BY id_obj DESC;
+
+-- Teste da view
+SELECT * FROM vw_perfil_publico;*/
+
