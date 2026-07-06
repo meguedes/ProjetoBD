@@ -96,6 +96,10 @@ AFTER DELETE ON public.postagem
 FOR EACH ROW
 EXECUTE FUNCTION fn_deletar_objeto_orfao();
 
+--==========
+--Testes
+--==========
+
 /*-- Teste da procedure
 CALL proc_cadastrar_usuario(
     '123.456.789-00',
@@ -126,3 +130,5 @@ SELECT * FROM public.objeto ORDER BY id_obj DESC;
 -- Teste da view
 SELECT * FROM vw_perfil_publico;*/
 
+-- Tentativa de excluir tabela FK de outra tabela
+DELETE FROM Usuario;

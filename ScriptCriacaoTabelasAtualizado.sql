@@ -25,6 +25,42 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP VIEW IF EXISTS public.vw_feed_completo CASCADE;
+DROP VIEW IF EXISTS public.vw_perfil_publico CASCADE;
+
+DROP TRIGGER IF EXISTS tg_processar_devolucao ON public.devolucao CASCADE;
+DROP TRIGGER IF EXISTS tg_usuario_autenticado ON public.usuario CASCADE;
+
+DROP TABLE IF EXISTS public.mensagem CASCADE;
+DROP TABLE IF EXISTS public.conversa CASCADE;
+DROP TABLE IF EXISTS public.devolucao CASCADE;
+DROP TABLE IF EXISTS public.notificacao CASCADE;
+DROP TABLE IF EXISTS public.postagem CASCADE;
+DROP TABLE IF EXISTS public.objeto CASCADE;
+DROP TABLE IF EXISTS public.localizacao CASCADE;
+DROP TABLE IF EXISTS public.categoria_objeto CASCADE;
+DROP TABLE IF EXISTS public.campi CASCADE;
+DROP TABLE IF EXISTS public.usuario CASCADE;
+
+DROP FUNCTION IF EXISTS public.fn_buscar_postagens_por_categoria(character varying) CASCADE;
+DROP FUNCTION IF EXISTS public.fn_notificar_login() CASCADE;
+DROP FUNCTION IF EXISTS public.fn_processar_devolucao() CASCADE;
+DROP PROCEDURE IF EXISTS public.proc_anexar_foto_objeto(integer, bytea) CASCADE;
+DROP PROCEDURE IF EXISTS public.proc_cadastrar_usuario(character varying, character varying, character varying, character varying, character varying) CASCADE;
+DROP PROCEDURE IF EXISTS public.proc_cadastrar_usuario(character varying, character varying, character varying, character varying, character varying, text, character varying) CASCADE;
+DROP PROCEDURE IF EXISTS public.proc_registrar_devolucao(integer, character varying, text) CASCADE;
+DROP PROCEDURE IF EXISTS public.proc_registrar_postagem(character varying, integer, character varying, character varying, character varying, text, integer, character varying) CASCADE;
+
+DROP SEQUENCE IF EXISTS public.campi_id_campi_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.categoria_objeto_id_categoria_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.conversa_id_conversa_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.devolucao_id_dev_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.localizacao_id_local_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.mensagem_id_mensagem_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.notificacao_id_notificacao_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.objeto_id_obj_seq CASCADE;
+DROP SEQUENCE IF EXISTS public.postagem_id_post_seq CASCADE;
+
 --
 -- Name: fn_buscar_postagens_por_categoria(character varying); Type: FUNCTION; Schema: public; Owner: -
 --
