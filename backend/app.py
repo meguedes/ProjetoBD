@@ -277,6 +277,37 @@ def devolver_postagem(id_post):
         conn.close()
 
 
+@app.put("/api/postagens/<int:id_post>")
+def editar_postagem(id_post):
+    dados = request.get_json(force=True)
+    cpf = dados.get("cpf")
+
+    if not dados.get("nome_objeto"):
+        return jsonify({"erro": "Campo obrigatório: nome_objeto"}), 400
+
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT cpf, id_obj FROM Postagem WHERE id_post = %s", (id_post,))
+            postagem = cur.fetchone()
+            if not postagem:
+                return jsonify({"erro": "Postagem não encontrada"}), 404
+            if postagem["cpf"] != cpf:
+                return jsonify({"erro": "Você não é o dono desta postagem"}), 403
+
+            cur.execute(
+                "CALL proc_editar_objeto(%s, %s, %s, %s, %s)",
+                (
+                    postagem["id_obj"], dados["nome_objeto"], dados.get("cor"),
+                    dados.get("tamanho"), dados.get("descricao"),
+                ),
+            )
+        conn.commit()
+        return jsonify({"ok": True})
+    finally:
+        conn.close()
+
+
 @app.delete("/api/postagens/<int:id_post>")
 def excluir_postagem(id_post):
     cpf = request.args.get("cpf")
@@ -293,6 +324,14 @@ def excluir_postagem(id_post):
                 return jsonify({"erro": "Postagem não encontrada"}), 404
         conn.commit()
         return jsonify({"ok": True})
+    except psycopg.errors.ForeignKeyViolation:
+        # A postagem é chave estrangeira em Devolucao (sem ON DELETE CASCADE):
+        # o Postgres recusa o DELETE enquanto existir devolução registrada.
+        conn.rollback()
+        return jsonify({
+            "erro": "Não é possível excluir: existe uma devolução registrada "
+                    "para esta postagem. Remova a devolução antes de excluir."
+        }), 409
     finally:
         conn.close()
 
