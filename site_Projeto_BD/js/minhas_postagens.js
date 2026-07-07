@@ -100,6 +100,18 @@ async function carregarPostagens(){
 
             </button>
 
+            ${post.status_postagem === "Devolvido" ? `
+
+            <button
+                class="btn btn-outline-success ms-2"
+                onclick="removerDevolucao(${post.id_post})">
+
+                Remover Devolução
+
+            </button>
+
+            ` : `
+
             <button
                 class="btn btn-success ms-2"
                 onclick="marcarDevolvido(${post.id_post})">
@@ -107,6 +119,8 @@ async function carregarPostagens(){
                 Marcar como Devolvido
 
             </button>
+
+            `}
 
             <button
                 class="btn btn-danger ms-2"
@@ -144,6 +158,34 @@ async function marcarDevolvido(idPost){
     if(!resposta.ok){
         const dados = await resposta.json();
         alert(dados.erro || "Não foi possível marcar como devolvido.");
+        return;
+    }
+
+    location.reload();
+}
+
+// ======================================================
+// REMOVER DEVOLUÇÃO
+// ======================================================
+
+async function removerDevolucao(idPost){
+
+    const confirmar = confirm(
+        "Remover a devolução? A postagem volta a ficar em aberto."
+    );
+
+    if(!confirmar){
+        return;
+    }
+
+    const resposta = await fetch(
+        `${API_BASE}/postagens/${idPost}/devolver?cpf=${encodeURIComponent(usuarioLogado.cpf)}`,
+        { method: "DELETE" }
+    );
+
+    if(!resposta.ok){
+        const dados = await resposta.json();
+        alert(dados.erro || "Não foi possível remover a devolução.");
         return;
     }
 

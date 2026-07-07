@@ -139,6 +139,52 @@ def logout():
     return jsonify({"ok": True})
 
 
+@app.put("/api/usuarios/<cpf>")
+def editar_usuario(cpf):
+    dados = request.get_json(force=True)
+
+    if not dados.get("nome"):
+        return jsonify({"erro": "Campo obrigatório: nome"}), 400
+
+    senha_hash = generate_password_hash(dados["senha"]) if dados.get("senha") else None
+
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "CALL proc_editar_usuario(%s, %s, %s, %s, %s)",
+                (cpf, dados["nome"], dados.get("telefone"), dados.get("registro"), senha_hash),
+            )
+        conn.commit()
+        return jsonify({"ok": True})
+    except psycopg.errors.RaiseException:
+        conn.rollback()
+        return jsonify({"erro": "Usuário não encontrado"}), 404
+    finally:
+        conn.close()
+
+
+@app.delete("/api/usuarios/<cpf>")
+def excluir_usuario(cpf):
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM Usuario WHERE cpf = %s", (cpf,))
+            if cur.rowcount == 0:
+                conn.rollback()
+                return jsonify({"erro": "Usuário não encontrado"}), 404
+        conn.commit()
+        return jsonify({"ok": True})
+    except psycopg.errors.ForeignKeyViolation:
+        conn.rollback()
+        return jsonify({
+            "erro": "Não é possível excluir: existem postagens, mensagens ou devoluções "
+                    "associadas a esta conta. Exclua suas postagens antes de excluir a conta."
+        }), 409
+    finally:
+        conn.close()
+
+
 @app.get("/api/perfil/<cpf>")
 def perfil_publico(cpf):
     conn = get_conn()
@@ -271,6 +317,29 @@ def devolver_postagem(id_post):
                 "CALL proc_registrar_devolucao(%s, %s, %s)",
                 (id_post, cpf, "Marcado como devolvido pelo usuário"),
             )
+        conn.commit()
+        return jsonify({"ok": True})
+    finally:
+        conn.close()
+
+
+@app.delete("/api/postagens/<int:id_post>/devolver")
+def remover_devolucao(id_post):
+    cpf = request.args.get("cpf")
+
+    conn = get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT cpf FROM Postagem WHERE id_post = %s", (id_post,))
+            postagem = cur.fetchone()
+            if not postagem:
+                return jsonify({"erro": "Postagem não encontrada"}), 404
+            if postagem["cpf"] != cpf:
+                return jsonify({"erro": "Você não é o dono desta postagem"}), 403
+
+            # Libera a postagem para poder ser excluída (Devolucao.id_post
+            # não tem ON DELETE) e reabre o status.
+            cur.execute("CALL proc_remover_devolucao(%s)", (id_post,))
         conn.commit()
         return jsonify({"ok": True})
     finally:

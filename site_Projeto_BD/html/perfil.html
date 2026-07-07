@@ -117,33 +117,52 @@
                 <hr>
 
                 <!-- ======================================
-                     DADOS CADASTRAIS
+                     DADOS CADASTRAIS (modo exibição)
                 ======================================= -->
 
-                <p>
-                    <strong>CPF:</strong>
-                    <span id="cpfUsuario"></span>
-                </p>
+                <div id="dadosPerfil">
 
-                <p>
-                    <strong>Email:</strong>
-                    <span id="emailUsuario"></span>
-                </p>
+                    <p>
+                        <strong>CPF:</strong>
+                        <span id="cpfUsuario"></span>
+                    </p>
 
-                <p>
-                    <strong>Telefone:</strong>
-                    <span id="telefoneUsuario"></span>
-                </p>
+                    <p>
+                        <strong>Email:</strong>
+                        <span id="emailUsuario"></span>
+                    </p>
 
-                <p>
-                    <strong>Registro:</strong>
-                    <span id="registroUsuario"></span>
-                </p>
+                    <p>
+                        <strong>Telefone:</strong>
+                        <span id="telefoneUsuario"></span>
+                    </p>
 
-                <p>
-                    <strong>Tipo:</strong>
-                    <span id="tipoUsuario"></span>
-                </p>
+                    <p>
+                        <strong>Registro:</strong>
+                        <span id="registroUsuario"></span>
+                    </p>
+
+                    <p>
+                        <strong>Tipo:</strong>
+                        <span id="tipoUsuario"></span>
+                    </p>
+
+                    <button
+                        class="btn btn-warning btn-sm"
+                        id="btnEditarPerfil">
+
+                        Editar Perfil
+
+                    </button>
+
+                </div>
+
+                <!-- ======================================
+                     DADOS CADASTRAIS (modo edição)
+                     Preenchido/exibido via perfil.js
+                ======================================= -->
+
+                <div id="formPerfil" style="display:none;"></div>
 
                 <hr>
 
@@ -240,6 +259,15 @@
                         Conversas
 
                     </a>
+
+                    <!-- Exclusão definitiva da conta -->
+                    <button
+                        class="btn btn-outline-danger"
+                        id="btnExcluirConta">
+
+                        Excluir Conta
+
+                    </button>
 
                 </div>
 

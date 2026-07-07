@@ -169,6 +169,31 @@ BEGIN
 END;
 $$;
 
+-- Editar dados cadastrais do usuário (botão "Editar Perfil").
+-- p_senha fica NULL quando o usuário não quer trocar a senha (COALESCE mantém a atual).
+CREATE OR REPLACE PROCEDURE proc_editar_usuario(
+    p_cpf                    VARCHAR(14),
+    p_nome                   VARCHAR(150),
+    p_telefone               VARCHAR(15),
+    p_registro_institucional VARCHAR(20),
+    p_senha                  TEXT DEFAULT NULL
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE Usuario
+       SET nome                   = p_nome,
+           telefone               = p_telefone,
+           registro_institucional = p_registro_institucional,
+           senha                  = COALESCE(p_senha, senha)
+     WHERE cpf = p_cpf;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Usuario % nao encontrado.', p_cpf;
+    END IF;
+END;
+$$;
+
 -- Registrar postagem [grava em 2 tabelas na mesma transação: Objeto + Postagem]
 CREATE OR REPLACE PROCEDURE proc_registrar_postagem(
     p_cpf           VARCHAR(14),
@@ -244,6 +269,27 @@ AS $$
 BEGIN
     INSERT INTO Devolucao (id_post, cpf, observacao)
     VALUES (p_id_post, p_cpf_recebedor, p_observacao);
+END;
+$$;
+
+-- Desfazer uma devolução (botão "Remover Devolução"): sem isso, a
+-- Postagem fica presa para sempre, porque Devolucao.id_post não tem
+-- ON DELETE - excluir a postagem exige excluir a devolução antes.
+CREATE OR REPLACE PROCEDURE proc_remover_devolucao(
+    p_id_post INT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM Devolucao WHERE id_post = p_id_post;
+
+    UPDATE Postagem
+       SET status_postagem = 'Aberta'
+     WHERE id_post = p_id_post;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Postagem % nao encontrada.', p_id_post;
+    END IF;
 END;
 $$;
 
