@@ -316,12 +316,17 @@ def excluir_postagem(id_post):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "DELETE FROM Postagem WHERE id_post = %s AND cpf = %s",
+                "DELETE FROM Postagem WHERE id_post = %s AND cpf = %s RETURNING id_obj",
                 (id_post, cpf),
             )
-            if cur.rowcount == 0:
+            postagem = cur.fetchone()
+            if not postagem:
                 conn.rollback()
                 return jsonify({"erro": "Postagem não encontrada"}), 404
+
+            # A postagem tem seu próprio Objeto (criado 1:1 em
+            # proc_registrar_postagem) - sem isso ele fica órfão no banco.
+            cur.execute("DELETE FROM Objeto WHERE id_obj = %s", (postagem["id_obj"],))
         conn.commit()
         return jsonify({"ok": True})
     except psycopg.errors.ForeignKeyViolation:

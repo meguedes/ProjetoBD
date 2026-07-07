@@ -11,8 +11,8 @@ def get_conn():
     return psycopg.connect(
         host=os.getenv("DB_HOST", "localhost"),
         port=os.getenv("DB_PORT", "5432"),
-        dbname=os.getenv("DB_NAME", "achados_perdidos"),
+        dbname=os.getenv("DB_NAME", "achados_e_perdidos"),
         user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD", "2004"),
+        password=os.getenv("DB_PASSWORD", "senha123"),
         row_factory=dict_row,
     )
