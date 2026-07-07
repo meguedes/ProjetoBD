@@ -96,12 +96,56 @@ AFTER DELETE ON public.postagem
 FOR EACH ROW
 EXECUTE FUNCTION fn_deletar_objeto_orfao();
 
---==========
---Testes
---==========
+-- =======
+-- TESTES
+-- =======
+-- ===================================================================
+-- TÓPICO 1: Mostrar as tabelas do banco com os registros (Mínimo 5)
+-- Objetivo: Abrir e mostrar os dados persistidos nas tabelas.
+-- ===================================================================
+SELECT COUNT(*) FROM Usuario;
+SELECT COUNT(*) FROM Postagem;
+SELECT COUNT(*) FROM Objeto;
 
-/*-- Teste da procedure
-CALL proc_cadastrar_usuario(
+-- ===================================================================
+-- TÓPICO 2: O CRUD funcionando (Mínimo 3 tabelas com relacionamento)
+-- Objetivo: Mostrar a leitura dos dados vindos do front e o teste de deleção.
+-- ===================================================================
+
+-- [Read - Leitura Geral]
+SELECT * FROM Usuario;
+
+-- [Read - Verificação por CPF]
+SELECT * FROM Usuario
+	WHERE cpf = '033.177.041-52';
+
+-- [Delete - Teste de integridade com exclusão de post]
+SELECT * FROM Postagem;
+SELECT * FROM Objeto;
+
+DELETE FROM Postagem
+	WHERE id_post = 7; --Alterar conforme id do post (ESTÁ APAGANDO)
+
+SELECT * FROM Objeto;
+
+
+-- ===================================================================
+-- TÓPICO 3: A VIEW funcionando
+-- Objetivo: Demonstrar o agrupamento de dados através de visões.
+-- ===================================================================
+-- Feed Geral
+SELECT * FROM vw_feed_completo
+	ORDER BY data_hora; 
+
+--- Perfil Público
+SELECT * FROM vw_perfil_publico --(DADOS BLOQUEADOS)
+	WHERE email = 'guedesellen@gmail.com';
+
+-- ===================================================================
+-- TÓPICO 7: A PROCEDURE funcionando
+-- Objetivo: Demonstrar a execução da rotina interna de cadastro.
+-- ===================================================================
+CALL proc_cadastrar_usuario( -- ESTÀ CADASTRANDO
     '123.456.789-00',
     'Ana Costa',
     'ana@unb.br',
@@ -111,9 +155,24 @@ CALL proc_cadastrar_usuario(
     '61999998888'
 );
 
--- Teste das notificações
+
+-- ===================================================================
+-- TÓPICO 8: A TRIGGER funcionando
+-- Objetivo: Provar o disparo automático das notificações e gatilhos.
+-- ===================================================================
+
+SELECT COUNT(*) FROM Notificacao
+	WHERE cpf = 'ALTERAR PARA CPF DIGITADO FORMATO 000.000.000-00';
+
+-- Visualizar mensagem(ns) geradas pela Trigger
+SELECT mensagem FROM Notificacao
+	WHERE cpf = 'ALTERAR PARA CPF DIGITADO FORMATO 000.000.000-00' 
+	ORDER BY id_notificacao;
+
+-- Verificação completa da tabela de notificações
 SELECT * FROM Notificacao;
--- 2° teste
+
+-- Teste de junção (JOIN entre Usuário e Notificação gerada pelo gatilho)
 SELECT 
     u.cpf,
     u.nome AS nome_usuario,
@@ -124,11 +183,10 @@ FROM public.usuario u
 JOIN public.notificacao n ON u.cpf = n.cpf
 ORDER BY u.nome ASC;
 
---Teste dado binario
-SELECT * FROM public.objeto ORDER BY id_obj DESC;
-
--- Teste da view
-SELECT * FROM vw_perfil_publico;*/
-
--- Tentativa de excluir tabela FK de outra tabela
-DELETE FROM Usuario;
+-- ===================================================================
+-- TÓPICO 9: Inserção de um dado binário no banco (Foto/JPEG/PDF)
+-- Objetivo: Mostrar em tempo real o tamanho em bytes do binário armazenado.
+-- ===================================================================
+SELECT id_obj, nome_obj,
+	octet_length(foto_obj) AS bytes_foto
+FROM Objeto ORDER BY id_obj;

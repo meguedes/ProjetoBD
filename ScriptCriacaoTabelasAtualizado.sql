@@ -100,7 +100,7 @@ CREATE TABLE Postagem (
         CHECK (status_postagem IN ('Aberta', 'Em contato', 'Resolvido', 'Devolvido')),
     FOREIGN KEY (cpf)      REFERENCES Usuario(cpf),
     FOREIGN KEY (id_local) REFERENCES Localizacao(id_local),
-    FOREIGN KEY (id_obj)   REFERENCES Objeto(id_obj)
+    FOREIGN KEY (id_obj)   REFERENCES Objeto(id_obj) ON DELETE RESTRICT
 );
 
 -- Conversa
@@ -108,7 +108,7 @@ CREATE TABLE Conversa (
     id_conversa  SERIAL PRIMARY KEY,
     id_post      INT NOT NULL,
     data_criacao TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (id_post) REFERENCES Postagem(id_post) ON DELETE CASCADE
+    FOREIGN KEY (id_post) REFERENCES Postagem(id_post) ON DELETE RESTRICT
 );
 
 -- Mensagem
@@ -118,7 +118,7 @@ CREATE TABLE Mensagem (
     cpf         VARCHAR(14) NOT NULL,
     conteudo    TEXT NOT NULL,
     data_hora   TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (id_conversa) REFERENCES Conversa(id_conversa) ON DELETE CASCADE,
+    FOREIGN KEY (id_conversa) REFERENCES Conversa(id_conversa) ON DELETE RESTRICT,
     FOREIGN KEY (cpf)         REFERENCES Usuario(cpf)
 );
 
