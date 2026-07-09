@@ -1,0 +1,25 @@
+/* Barra de navegação */
+.navbar-unb{
+    background:#003366;
+    min-height:70px;
+}
+
+/* Logo da UnB */
+.unb-logo-nav{
+    height:45px;
+    width:auto;
+    object-fit:contain;
+    margin-right: 12px;
+}
+
+/* Nome do sistema */
+.nav-brand-text{
+    font-size:1.5rem;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.nav-brand-text:hover{
+    color:white;
+    text-decoration:none;
+}

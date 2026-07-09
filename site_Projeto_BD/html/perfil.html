@@ -1,0 +1,303 @@
+<!-- =====================================================
+     SISTEMA UNB - ACHADOS E PERDIDOS
+     Página de Perfil do Usuário
+===================================================== -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <!-- ==================================================
+         CONFIGURAÇÕES BÁSICAS DA PÁGINA
+    =================================================== -->
+
+    <meta charset="UTF-8">
+
+    <!-- Permite que a página seja responsiva em
+         dispositivos móveis, tablets e computadores -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <!-- Título exibido na aba do navegador -->
+    <title>
+        Perfil - UnB - Achados e Perdidos
+    </title>
+
+    <!-- ==================================================
+         BOOTSTRAP
+         Framework utilizado para layout, componentes
+         visuais e responsividade
+    =================================================== -->
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- ==================================================
+         ARQUIVO CSS PERSONALIZADO
+         Responsável pela aparência da página de perfil
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="/css/perfil.css">
+
+</head>
+
+<body>
+
+    <!-- ==================================================
+         BARRA DE NAVEGAÇÃO SUPERIOR
+    =================================================== -->
+
+    <nav class="navbar navbar-dark navbar-unb">
+
+        <div class="container position-relative">
+
+            <!-- Logo + nome centralizados -->
+            <div class="position-absolute top-50 start-50 translate-middle d-flex align-items-center">
+
+                <img
+                    src="/logo_unb.png"
+                    class="unb-logo-nav"
+                    alt="Logo UnB">
+
+                <a
+                    href="/html/index.html"
+                    class="navbar-brand nav-brand-text text-white m-0 ms-2">
+
+                    UnB - Achados e Perdidos
+
+                </a>
+
+            </div>
+
+            <!-- Botão Sair -->
+            <button
+                class="btn btn-light ms-auto"
+                id="btnSair">
+
+                Sair
+
+            </button>
+
+        </div>
+
+    </nav>
+
+    <!-- ==================================================
+         CONTEÚDO PRINCIPAL DA PÁGINA
+    =================================================== -->
+
+    <div class="container mt-5">
+
+        <!-- Cartão principal do perfil -->
+        <div class="card perfil-card">
+
+            <div class="card-body">
+
+                <!-- ======================================
+                     ÁREA DE IDENTIFICAÇÃO DO USUÁRIO
+                ======================================= -->
+
+                <div class="text-center">
+
+                    <!-- Avatar do usuário -->
+                    <div class="avatar">
+                        👤
+                    </div>
+
+                    <!-- Nome carregado dinamicamente -->
+                    <h2 id="nomeUsuario"></h2>
+
+                </div>
+
+                <hr>
+
+                <!-- ======================================
+                     DADOS CADASTRAIS (modo exibição)
+                ======================================= -->
+
+                <div id="dadosPerfil">
+
+                    <p>
+                        <strong>CPF:</strong>
+                        <span id="cpfUsuario"></span>
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        <span id="emailUsuario"></span>
+                    </p>
+
+                    <p>
+                        <strong>Telefone:</strong>
+                        <span id="telefoneUsuario"></span>
+                    </p>
+
+                    <p>
+                        <strong>Registro:</strong>
+                        <span id="registroUsuario"></span>
+                    </p>
+
+                    <p>
+                        <strong>Tipo:</strong>
+                        <span id="tipoUsuario"></span>
+                    </p>
+
+
+                </div>
+
+                <!-- ======================================
+                     DADOS CADASTRAIS (modo edição)
+                     Preenchido/exibido via perfil.js
+                ======================================= -->
+                <!-- formulário criado pelo perfil.js -->
+                <div
+                    id="formPerfil"
+                    style="display:none;">
+
+                </div>
+
+                <hr>
+
+                <!-- ======================================
+                     ESTATÍSTICAS DO USUÁRIO
+                ======================================= -->
+
+                <div class="row text-center">
+
+                    <!-- Quantidade de postagens -->
+                    <div class="col">
+
+                        <h4 id="qtdPostagens">0</h4>
+
+                        <small>
+                            Postagens
+                        </small>
+
+                    </div>
+
+                    <!-- Quantidade de objetos devolvidos -->
+                    <div class="col">
+
+                        <h4 id="qtdDevolvidos">0</h4>
+
+                        <small>
+                            Devolvidos
+                        </small>
+
+                    </div>
+
+                    <!-- Quantidade de notificações -->
+                    <div class="col">
+
+                        <h4 id="qtdNotificacoes">0</h4>
+
+                        <small>
+                            Notificações
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <!-- ======================================
+                     MENU DE NAVEGAÇÃO DO USUÁRIO
+                ======================================= -->
+
+                <div class="d-grid gap-2">
+
+                    <!-- Acessa o feed principal -->
+                    <a
+                        href="/html/index.html"
+                        class="btn btn-unb">
+
+                        Ver Feed
+
+                    </a>
+
+                    <!-- Cadastra um novo objeto -->
+                    <a
+                        href="/html/cadastro_objeto.html"
+                        class="btn btn-unb">
+
+                        Anunciar Objeto
+
+                    </a>
+
+                    <!-- Exibe as publicações do usuário -->
+                    <a
+                        href="/html/minhas_postagens.html"
+                        class="btn btn-unb">
+
+                        Minhas Postagens
+
+                    </a>
+
+                    <!-- Acessa a central de notificações -->
+                    <a
+                        href="/html/notificacoes.html"
+                        class="btn btn-unb">
+
+                        Notificações
+
+                    </a>
+
+                    <!-- Acessa as conversas do sistema -->
+                    <a
+                        href="/html/conversas.html"
+                        class="btn btn-unb">
+
+                        Conversas
+
+                    </a>
+
+                    <button
+                        class="btn btn-warning"
+                        id="btnEditarPerfil">
+
+                        Editar Perfil
+
+                    </button>
+
+
+
+
+                    <!-- Exclusão definitiva da conta -->
+                    <button
+                        class="btn btn-outline-danger"
+                        id="btnExcluirConta">
+
+                        Excluir Conta
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==================================================
+         SCRIPT DA PÁGINA
+
+         Responsável por:
+         - Carregar os dados do usuário
+         - Preencher informações do perfil
+         - Controlar o logout
+         - Gerenciar a sessão do usuário
+    =================================================== -->
+
+    <script src="/js/config.js"></script>
+    <script src="/js/perfil.js"></script>
+
+</body>
+
+</html>

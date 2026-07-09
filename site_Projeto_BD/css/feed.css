@@ -1,0 +1,146 @@
+/* Configurações gerais da página */
+body {
+    background-color: #0b0c0e; /* Cor de fundo escura */
+    color: #ffffff; /* Cor padrão do texto */
+    font-family: 'Inter', sans-serif; /* Fonte principal */
+    -webkit-font-smoothing: antialiased; /* Suaviza a renderização da fonte */
+    letter-spacing: -0.01em; /* Reduz levemente o espaçamento entre letras */
+}
+
+/* Container principal do feed */
+.feed-container {
+    max-width: 620px; /* Largura máxima do conteúdo */
+    margin: 0 auto; /* Centraliza horizontalmente */
+    padding: 20px; /* Espaçamento interno */
+}
+
+/* Card principal de cada publicação */
+.premium-card {
+    position: relative; /* Permite posicionar elementos internos */
+    min-height: 440px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: #131416;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); /* Sombra para profundidade */
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Animação suave */
+}
+
+/* Efeito ao passar o mouse sobre o card */
+.premium-card:hover {
+    transform: scale(0.99); /* Pequena redução de tamanho */
+}
+
+/* Imagem de fundo do card */
+.feed-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajusta a imagem sem distorcer */
+    display: block;
+}
+
+/* Camada escura sobre a imagem */
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* Gradiente para melhorar a leitura do texto */
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 30%,
+        rgba(0,0,0,0.4) 60%,
+        rgba(0,0,0,0.95) 100%
+    );
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribui os elementos verticalmente */
+    padding: 32px;
+}
+
+/* Selo com efeito de vidro (Glassmorphism) */
+.glass-badge {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 8px 16px;
+    border-radius: 50px;
+
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+/* Marca d'água da logo da UnB dentro do card */
+.card-unb-logo {
+    height: 32px;
+    opacity: 0.35; /* Transparência */
+    object-fit: contain;
+}
+
+/* Título principal do card */
+.card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+}
+
+/* Texto descritivo do card */
+.card-desc {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.65);
+    max-width: 85%; /* Limita a largura para facilitar leitura */
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+/* Botão principal do card */
+.btn-premium {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+
+    font-weight: 500;
+    font-size: 0.85rem;
+
+    padding: 12px 24px;
+    width: fit-content;
+
+    transition: all 0.3s ease;
+}
+
+/* Efeito do botão ao passar o mouse */
+.btn-premium:hover {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+}
+
+/* Barra de navegação personalizada */
+.custom-nav {
+    background-color: rgba(11, 12, 14, 0.8) !important;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 14px 0;
+}
+

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+    <!-- Configurações básicas da página -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título exibido na aba do navegador -->
+    <title>UnB - Achados e Perdidos - Cadastro Objeto</title>
+
+    <!-- Framework Bootstrap para estilização responsiva -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Arquivo CSS personalizado da página -->
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/cadastro_objeto.css">
+
+</head>
+
+<body>
+
+    <!-- ===================================================== -->
+    <!-- BARRA DE NAVEGAÇÃO SUPERIOR (NAVBAR) -->
+    <!-- ===================================================== -->
+
+    <nav class="navbar navbar-dark navbar-unb">
+
+        <div class="container d-flex justify-content-between align-items-center position-relative">
+
+            <!-- Botão Feed -->
+            <a
+                href="/html/index.html"
+                class="btn btn-light">
+
+                Feed
+
+            </a>
+
+            <!-- Logo + nome -->
+            <div class="position-absolute start-50 translate-middle-x d-flex align-items-center">
+
+                <img
+                    src="/logo_unb.png"
+                    class="unb-logo-nav"
+                    alt="Logo UnB">
+
+                <a
+                    href="/html/index.html"
+                    class="navbar-brand nav-brand-text text-white m-0 ms-2">
+
+                    UnB - Achados e Perdidos
+
+                </a>
+
+            </div>
+
+            <!-- Botão Perfil -->
+            <a
+                href="/html/perfil.html"
+                class="btn btn-light">
+
+                Perfil
+
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- ===================================================== -->
+    <!-- CONTAINER PRINCIPAL -->
+    <!-- ===================================================== -->
+
+    <div class="container">
+
+        <!-- Card contendo o formulário -->
+        <div class="card card-form">
+
+            <div class="card-body p-4">
+
+                <!-- Título da página -->
+                <h2 class="titulo mb-4">
+                    Cadastro de Objeto
+                </h2>
+
+                <!-- ===================================================== -->
+                <!-- FORMULÁRIO DE CADASTRO DE OBJETOS -->
+                <!-- ===================================================== -->
+
+                <form
+                    id="cadastroObjetoForm"
+                    action="#"
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                    <!-- ===================================================== -->
+                    <!-- NOME DO OBJETO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Nome do Objeto
+                        </label>
+
+                        <input
+                            name="nome_objeto"
+                            type="text"
+                            class="form-control"
+                            placeholder="Ex: Mochila Preta"
+                            required>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- COR DO OBJETO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label>
+                            Cor do objeto
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="cor">
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- TAMANHO DO OBJETO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label>
+                            Tamanho
+                        </label>
+
+                        <select
+                            class="form-select"
+                            name="tamanho">
+
+                            <option>Pequeno</option>
+                            <option>Médio</option>
+                            <option>Grande</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- DESCRIÇÃO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Descrição
+                        </label>
+
+                        <textarea
+                            name="descricao"
+                            class="form-control"
+                            rows="4"
+                            placeholder="Descreva o objeto..."
+                            required></textarea>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- CATEGORIA DO OBJETO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Categoria
+                        </label>
+
+                        <select
+                            name="categoria"
+                            class="form-select"
+                            required>
+
+                            <option value="" selected disabled>
+                                Selecione uma categoria
+                            </option>
+
+                            <option>Eletrônicos</option>
+                            <option>Documentos</option>
+                            <option>Mochilas</option>
+                            <option>Roupas</option>
+                            <option>Acessórios</option>
+                            <option>Material Escolar</option>
+                            <option>Outro</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- TIPO DA POSTAGEM -->
+                    <!-- Perdido ou Encontrado -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Tipo da Postagem
+                        </label>
+
+                        <select
+                            name="tipo_postagem"
+                            class="form-select"
+                            required>
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option>Perdido</option>
+                            <option>Encontrado</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- CAMPUS DA UNB -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Campus da UnB
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="campus"
+                            name="campus"
+                            required>
+
+                            <option value="">
+                                Selecione o Campus
+                            </option>
+
+                            <option value="darcy">
+                                Darcy Ribeiro
+                            </option>
+
+                            <option value="fga">
+                                FGA - Gama
+                            </option>
+
+                            <option value="fce">
+                                FCE - Ceilândia
+                            </option>
+
+                            <option value="fup">
+                                FUP - Planaltina
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- LOCALIZAÇÃO -->
+                    <!-- Local onde o objeto foi perdido ou encontrado -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Local onde foi perdido/encontrado
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="localizacao"
+                            name="localizacao"
+                            required>
+
+                            <option value="">
+                                Primeiro selecione um campus
+                            </option>
+
+                        </select>
+
+                        <!-- Campo exibido apenas quando o local não estiver listado -->
+
+                        <div
+                            class="mt-3"
+                            id="campoOutro"
+                            style="display:none;">
+
+                            <label class="form-label">
+                                Informe o local
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="outro_local"
+                                placeholder="Ex: Corredor próximo ao laboratório">
+
+                        </div>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- UPLOAD DA FOTO -->
+                    <!-- ===================================================== -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Foto do Objeto
+                        </label>
+
+                        <input
+                            name="foto"
+                            type="file"
+                            class="form-control"
+                            accept="image/*"
+                            capture="environment"
+                            required>
+
+                        <div class="form-text">
+
+                            Tire uma foto ou selecione uma imagem do dispositivo.
+
+                        </div>
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- PRÉ-VISUALIZAÇÃO DA IMAGEM -->
+                    <!-- ===================================================== -->
+
+                    <div class="text-center">
+
+                        <img
+                            id="preview"
+                            class="img-fluid mt-3 rounded shadow"
+                            style="display:none; max-height:300px;"
+                            alt="Pré-visualização da imagem">
+
+                    </div>
+
+                    <!-- ===================================================== -->
+                    <!-- BOTÃO DE ENVIO -->
+                    <!-- ===================================================== -->
+
+                    <button
+                        type="submit"
+                        class="btn btn-unb w-100">
+
+                        Publicar Objeto
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Arquivo JavaScript responsável pela lógica da página -->
+    <script src="/js/config.js"></script>
+    <script src="/js/cadastro_objeto.js"></script>
+
+</body>
+</html>

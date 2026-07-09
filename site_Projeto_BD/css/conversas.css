@@ -1,0 +1,138 @@
+/* ===================================================== */
+/* ESTILO GERAL DA PÁGINA */
+/* Define a cor de fundo utilizada em toda a interface */
+/* ===================================================== */
+
+body{
+background:#f5f5f5;
+}
+
+/* ===================================================== */
+/* BARRA DE NAVEGAÇÃO */
+/* Utiliza a cor institucional da Universidade */
+/* ===================================================== */
+
+
+/* ===================================================== */
+/* ÁREA PRINCIPAL DO CHAT */
+/* Container onde as mensagens são exibidas */
+/* ===================================================== */
+
+.chat-box{
+
+    background:white;
+
+    border-radius:10px;
+
+    padding:20px;
+
+    height:500px;
+
+    box-sizing:border-box;
+
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+
+    overflow-y:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    align-items:stretch;
+
+}
+
+/* ===================================================== */
+/* ESTILO BASE DAS MENSAGENS */
+/* Aplicado tanto para mensagens enviadas quanto recebidas */
+/* ===================================================== */
+
+.mensagem{
+
+
+/* Espaçamento entre mensagens */
+margin-bottom:15px;
+
+/* Espaçamento interno da mensagem */
+padding:10px;
+
+/* Arredondamento das bordas */
+border-radius:10px;
+
+max-width: 60%;
+
+padding: 12px;
+
+border-radius: 15px;
+
+margin-bottom: 10px;
+
+flex-shrink:0;
+
+}
+
+/* ===================================================== */
+/* MENSAGENS RECEBIDAS */
+/* Exibidas quando outro usuário envia uma mensagem */
+/* ===================================================== */
+
+.recebida{
+
+
+/* Cor de fundo cinza claro */
+background:#e9ecef;
+align-self: flex-start;
+
+
+}
+
+/* ===================================================== */
+/* MENSAGENS ENVIADAS */
+/* Exibidas quando o usuário logado envia uma mensagem */
+/* ===================================================== */
+
+.enviada{
+
+
+/* Cor de fundo verde claro */
+background:#d1e7dd;
+
+/* Alinhamento à direita */
+align-self: flex-end;
+
+
+}
+
+/* ===================================================== */
+/* Caixa de conversa vazia */
+/* ===================================================== */
+
+.chat-box-conversas{
+
+    background:#e9ecef;
+
+    padding:18px;
+
+    border-radius:15px;
+
+    margin-bottom:10px;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+
+}
+
+.chat-box-conversas:hover{
+
+    transform:scale(1.02);
+
+    background:#d1e7dd;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
+
+}
