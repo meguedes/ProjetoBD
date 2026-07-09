@@ -269,142 +269,6 @@ def excluir_usuario(cpf):
         with conn.cursor() as cur:
 
 
-            # ==========================================
-            # BUSCA POSTAGENS DO USUÁRIO
-            # ==========================================
-
-            cur.execute(
-                """
-                SELECT id_post, id_obj
-                FROM Postagem
-                WHERE cpf = %s
-                """,
-                (cpf,)
-            )
-
-
-            postagens = cur.fetchall()
-
-
-
-            # ==========================================
-            # REMOVE DEVOLUÇÕES DAS POSTAGENS
-            # ==========================================
-
-            for post in postagens:
-
-
-                cur.execute(
-                    """
-                    DELETE FROM Devolucao
-                    WHERE id_post = %s
-                    """,
-                    (post["id_post"],)
-                )
-
-
-
-            # ==========================================
-            # REMOVE NOTIFICAÇÕES
-            # ==========================================
-
-            cur.execute(
-                """
-                DELETE FROM Notificacao
-                WHERE cpf = %s
-                """,
-                (cpf,)
-            )
-
-
-
-
-            # ==========================================
-            # BUSCA CONVERSAS DO USUÁRIO
-            # ==========================================
-
-            cur.execute(
-                """
-                SELECT id_conversa
-                FROM Conversa
-                WHERE cpf_criador = %s
-                OR cpf_interessado = %s
-                """,
-                (cpf, cpf)
-            )
-
-
-            conversas = cur.fetchall()
-
-
-
-            # ==========================================
-            # REMOVE TODAS AS MENSAGENS DAS CONVERSAS
-            # ==========================================
-
-            for conversa in conversas:
-
-
-                cur.execute(
-                    """
-                    DELETE FROM Mensagem
-                    WHERE id_conversa = %s
-                    """,
-                    (conversa["id_conversa"],)
-                )
-
-
-
-            # ==========================================
-            # REMOVE AS CONVERSAS
-            # ==========================================
-
-            cur.execute(
-                """
-                DELETE FROM Conversa
-                WHERE cpf_criador = %s
-                OR cpf_interessado = %s
-                """,
-                (cpf, cpf)
-            )
-
-
-
-            # ==========================================
-            # REMOVE POSTAGENS
-            # ==========================================
-
-            cur.execute(
-                """
-                DELETE FROM Postagem
-                WHERE cpf = %s
-                """,
-                (cpf,)
-            )
-
-
-
-            # ==========================================
-            # REMOVE OBJETOS DAS POSTAGENS
-            # ==========================================
-
-            for post in postagens:
-
-
-                cur.execute(
-                    """
-                    DELETE FROM Objeto
-                    WHERE id_obj = %s
-                    """,
-                    (post["id_obj"],)
-                )
-
-
-
-            # ==========================================
-            # FINALMENTE REMOVE USUÁRIO
-            # ==========================================
-
             cur.execute(
                 """
                 DELETE FROM Usuario
@@ -415,9 +279,6 @@ def excluir_usuario(cpf):
 
 
             if cur.rowcount == 0:
-
-
-                conn.rollback()
 
 
                 return jsonify(
@@ -433,12 +294,14 @@ def excluir_usuario(cpf):
 
         return jsonify(
             {
-                "ok":True
+                "mensagem":
+                "Usuário excluído com sucesso"
             }
         )
 
 
-    except Exception as erro:
+
+    except Exception:
 
 
         conn.rollback()
@@ -446,9 +309,10 @@ def excluir_usuario(cpf):
 
         return jsonify(
             {
-                "erro":str(erro)
+                "erro":
+                "Não é possível excluir: existem postagens, mensagens ou devoluções associadas a esta conta. Exclua seus vínculos antes de excluir a conta."
             }
-        ),400
+        ),409
 
 
 
@@ -456,7 +320,6 @@ def excluir_usuario(cpf):
 
 
         conn.close()
-
 
 @app.get("/api/perfil/<cpf>")
 def perfil_publico(cpf):
@@ -831,6 +694,87 @@ def enviar_mensagem():
     finally:
         conn.close()
 
+# =====================================================
+# EXCLUIR TODAS AS CONVERSAS DO USUÁRIO
+# =====================================================
+
+@app.delete("/api/conversas/usuario/<cpf>")
+def excluir_conversas_usuario(cpf):
+
+    conn = get_conn()
+
+    try:
+
+        with conn.cursor() as cur:
+
+
+            # pega conversas do usuário
+
+            cur.execute(
+                """
+                SELECT id_conversa
+                FROM Conversa
+                WHERE cpf_criador = %s
+                OR cpf_interessado = %s
+                """,
+                (cpf, cpf)
+            )
+
+
+            conversas = cur.fetchall()
+
+
+
+            # remove mensagens primeiro
+
+            for conversa in conversas:
+
+                cur.execute(
+                    """
+                    DELETE FROM Mensagem
+                    WHERE id_conversa = %s
+                    """,
+                    (conversa["id_conversa"],)
+                )
+
+
+
+            # remove conversas
+
+            cur.execute(
+                """
+                DELETE FROM Conversa
+                WHERE cpf_criador = %s
+                OR cpf_interessado = %s
+                """,
+                (cpf, cpf)
+            )
+
+
+
+        conn.commit()
+
+
+        return jsonify(
+            {"ok":True}
+        )
+
+
+    except Exception as erro:
+
+
+        conn.rollback()
+
+
+        return jsonify(
+            {"erro":str(erro)}
+        ),400
+
+
+    finally:
+
+        conn.close()
+
 @app.get("/api/conversas/usuario/<cpf>")
 def listar_conversas_usuario(cpf):
 
@@ -897,5 +841,3 @@ def listar_conversas_usuario(cpf):
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
-    

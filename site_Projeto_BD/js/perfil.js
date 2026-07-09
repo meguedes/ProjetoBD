@@ -155,6 +155,14 @@ Servidor
 
 </option>
 
+<option 
+value="Visitante"
+${usuario.tipoUsuario === "Visitante" ? "selected" : ""}>
+
+Visitante
+
+</option>
+
 
 </select>
 
@@ -641,7 +649,6 @@ document
 // EXCLUIR CONTA
 // ======================================================
 
-
 document
 .getElementById("btnExcluirConta")
 .addEventListener("click", async function(){
@@ -660,21 +667,22 @@ document
     }
 
 
-
     try{
 
+
+        // tenta excluir o usuário primeiro
 
         const resposta =
         await fetch(
             `${API_BASE}/usuarios/${encodeURIComponent(usuario.cpf)}`,
             {
-
                 method:"DELETE"
-
             }
         );
 
 
+
+        // se o banco bloquear por FK
 
         if(!resposta.ok){
 
@@ -683,10 +691,31 @@ document
             await resposta.json();
 
 
-            alert(
-                dados.erro ||
-                "Não foi possível excluir a conta."
+            const apagar =
+            confirm(
+                dados.erro +
+                "\n\nDeseja excluir suas conversas e tentar novamente?"
             );
+
+
+
+            if(apagar){
+
+
+                await fetch(
+                    `${API_BASE}/conversas/usuario/${encodeURIComponent(usuario.cpf)}`,
+                    {
+                        method:"DELETE"
+                    }
+                );
+
+
+                alert(
+                    "Conversas removidas. Clique em excluir conta novamente."
+                );
+
+
+            }
 
 
             return;
@@ -696,21 +725,17 @@ document
 
 
 
-        // remove sessão
+        // se conseguiu excluir
 
         localStorage.removeItem(
             "usuarioLogado"
         );
 
 
-
         alert(
             "Conta excluída com sucesso!"
         );
 
-
-
-        // volta para login
 
         window.location.href =
         "/html/login.html";
@@ -723,9 +748,6 @@ document
         alert(
             "Não foi possível conectar ao servidor."
         );
-
-
-        console.log(erro);
 
 
     }
