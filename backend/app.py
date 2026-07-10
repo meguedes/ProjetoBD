@@ -268,6 +268,52 @@ def excluir_usuario(cpf):
 
         with conn.cursor() as cur:
 
+            # "Excluir conta" apaga tudo que pertence a este usuário e que
+            # nao tem ON DELETE CASCADE (mensagens/conversas próprias ou de
+            # postagens próprias, devoluções feitas ou recebidas em
+            # postagens próprias, e as próprias postagens/objetos) antes do
+            # Usuario - sem isso as FKs sempre bloqueiam o DELETE abaixo.
+            cur.execute(
+                """
+                DELETE FROM Mensagem
+                WHERE cpf_remetente = %s
+                   OR id_conversa IN (
+                        SELECT id_conversa FROM Conversa
+                         WHERE cpf_criador = %s OR cpf_interessado = %s
+                            OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                   )
+                """,
+                (cpf, cpf, cpf, cpf),
+            )
+
+            cur.execute(
+                """
+                DELETE FROM Conversa
+                WHERE cpf_criador = %s OR cpf_interessado = %s
+                   OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                """,
+                (cpf, cpf, cpf),
+            )
+
+            cur.execute(
+                """
+                DELETE FROM Devolucao
+                WHERE cpf = %s
+                   OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                """,
+                (cpf, cpf),
+            )
+
+            cur.execute(
+                "DELETE FROM Postagem WHERE cpf = %s RETURNING id_obj",
+                (cpf,),
+            )
+            id_objetos = [linha["id_obj"] for linha in cur.fetchall()]
+            if id_objetos:
+                cur.execute(
+                    "DELETE FROM Objeto WHERE id_obj = ANY(%s)",
+                    (id_objetos,),
+                )
 
             cur.execute(
                 """
@@ -612,6 +658,13 @@ def criar_conversa():
 
         return jsonify(conversa)
 
+    except Exception as erro:
+
+        conn.rollback()
+
+        return jsonify(
+            {"erro": str(erro).strip()}
+        ), 400
 
     finally:
         conn.close()
@@ -690,6 +743,13 @@ def enviar_mensagem():
 
         return jsonify({"ok":True})
 
+    except Exception as erro:
+
+        conn.rollback()
+
+        return jsonify(
+            {"erro": str(erro).strip()}
+        ), 400
 
     finally:
         conn.close()
