@@ -6,6 +6,10 @@ from psycopg.rows import dict_row
 
 load_dotenv()
 
+print("BANCO:", os.getenv("DB_NAME"))
+print("USUARIO:", os.getenv("DB_USER"))
+print("SENHA:", os.getenv("DB_PASSWORD"))
+
 
 def get_conn():
     return psycopg.connect(

@@ -20,26 +20,27 @@ background:#f5f5f5;
 
 .chat-box{
 
+    background:white;
 
-/* Fundo branco para destacar as mensagens */
-background:white;
+    border-radius:10px;
 
-/* Cantos arredondados */
-border-radius:10px;
+    padding:20px;
 
-/* Espaçamento interno */
-padding:20px;
+    height:500px;
 
-/* Altura mínima da área de conversa */
-min-height:400px;
+    box-sizing:border-box;
 
-/* Sombra para destacar visualmente o chat */
-box-shadow:0 0 10px rgba(0,0,0,.1);
+    box-shadow:0 0 10px rgba(0,0,0,.1);
 
-/* Adiciona rolagem vertical quando houver
-   muitas mensagens */
-overflow-y:auto;
+    overflow-y:auto;
 
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    align-items:stretch;
 
 }
 
@@ -60,6 +61,15 @@ padding:10px;
 /* Arredondamento das bordas */
 border-radius:10px;
 
+max-width: 60%;
+
+padding: 12px;
+
+border-radius: 15px;
+
+margin-bottom: 10px;
+
+flex-shrink:0;
 
 }
 
@@ -73,6 +83,7 @@ border-radius:10px;
 
 /* Cor de fundo cinza claro */
 background:#e9ecef;
+align-self: flex-start;
 
 
 }
@@ -89,7 +100,7 @@ background:#e9ecef;
 background:#d1e7dd;
 
 /* Alinhamento à direita */
-text-align:right;
+align-self: flex-end;
 
 
 }
@@ -98,24 +109,30 @@ text-align:right;
 /* Caixa de conversa vazia */
 /* ===================================================== */
 
-.chat-box{
+.chat-box-conversas{
 
-    background:white;
+    background:#e9ecef;
+
+    padding:18px;
 
     border-radius:15px;
 
-    padding:40px;
+    margin-bottom:10px;
 
-    min-height:400px;
+    cursor:pointer;
 
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+    transition:0.2s;
 
-    display:flex;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
 
-    justify-content:center;
+}
 
-    align-items:center;
+.chat-box-conversas:hover{
 
-    text-align:center;
+    transform:scale(1.02);
+
+    background:#d1e7dd;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
 
 }

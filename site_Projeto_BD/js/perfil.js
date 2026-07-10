@@ -3,266 +3,754 @@
 // Página de Perfil
 // ======================================================
 
-// Recupera os dados do usuário logado
-const usuario = JSON.parse(
+
+// Usuário logado
+
+const usuario =
+JSON.parse(
     localStorage.getItem("usuarioLogado")
 );
 
-// Verifica se existe um usuário autenticado
-if (!usuario) {
+
+if(!usuario){
 
     alert("Faça login primeiro!");
 
-    window.location.href = "/html/login.html";
+    window.location.href =
+    "/html/login.html";
 
-} else {
+}else{
 
     preencherPerfil();
+
 }
 
+
 // ======================================================
-// EXIBIÇÃO DOS DADOS DO PERFIL
+// MOSTRAR DADOS DO PERFIL
 // ======================================================
+
 
 function preencherPerfil(){
 
+
     document.getElementById("nomeUsuario").textContent =
-        usuario.nome;
+    usuario.nome;
+
 
     document.getElementById("cpfUsuario").textContent =
-        usuario.cpf;
+    usuario.cpf;
+
 
     document.getElementById("emailUsuario").textContent =
-        usuario.email;
+    usuario.email;
+
 
     document.getElementById("telefoneUsuario").textContent =
-        usuario.telefone;
+    usuario.telefone;
+
 
     document.getElementById("registroUsuario").textContent =
-        usuario.registro;
+    usuario.registro;
+
 
     document.getElementById("tipoUsuario").textContent =
-        usuario.tipoUsuario;
+    usuario.tipoUsuario;
+
+
 }
+
+
 
 // ======================================================
 // EDITAR PERFIL
 // ======================================================
 
-document.getElementById("btnEditarPerfil")
+
+document
+.getElementById("btnEditarPerfil")
 .addEventListener("click", function(){
 
-    document.getElementById("dadosPerfil").style.display = "none";
 
-    const form = document.getElementById("formPerfil");
+const form =
+document.getElementById("formPerfil");
 
-    form.innerHTML = `
 
-        <div class="mb-2">
-            <label class="form-label">Nome completo</label>
-            <input type="text" class="form-control" id="edit-nome" value="${usuario.nome ?? ""}">
-        </div>
+document.getElementById("dadosPerfil")
+.style.display =
+"none";
 
-        <div class="mb-2">
-            <label class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="edit-telefone" value="${usuario.telefone ?? ""}">
-        </div>
 
-        <div class="mb-2">
-            <label class="form-label">Registro institucional</label>
-            <input type="text" class="form-control" id="edit-registro" value="${usuario.registro ?? ""}">
-        </div>
+form.innerHTML = `
 
-        <div class="mb-2">
-            <label class="form-label">Nova senha</label>
-            <input type="password" class="form-control" id="edit-senha" placeholder="Deixe em branco para manter a mesma">
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">Confirmar nova senha</label>
-            <input type="password" class="form-control" id="edit-confirmar-senha">
-        </div>
+<div class="mb-2">
 
-        <button class="btn btn-success" onclick="salvarEdicaoPerfil()">
-            Salvar
-        </button>
+<label>CPF</label>
 
-        <button class="btn btn-secondary ms-2" onclick="cancelarEdicaoPerfil()">
-            Cancelar
-        </button>
+<input
+class="form-control"
+value="${usuario.cpf}"
+disabled>
 
-    `;
+</div>
 
-    form.style.display = "block";
+
+
+<div class="mb-2">
+
+<label>Nome</label>
+
+<input
+class="form-control"
+id="edit-nome"
+value="${usuario.nome}">
+
+</div>
+
+
+
+<div class="mb-2">
+
+<label>Email</label>
+
+<input
+class="form-control"
+id="edit-email"
+value="${usuario.email}">
+
+</div>
+
+
+
+<div class="mb-2">
+
+<label>Tipo usuário</label>
+
+
+<select
+class="form-control"
+id="edit-tipoUsuario">
+
+<option
+${usuario.tipoUsuario==="Aluno" ? "selected" : ""}>
+
+Aluno
+
+</option>
+
+
+<option
+${usuario.tipoUsuario==="Professor" ? "selected" : ""}>
+
+Professor
+
+</option>
+
+
+<option
+${usuario.tipoUsuario==="Servidor" ? "selected" : ""}>
+
+Servidor
+
+</option>
+
+<option 
+value="Visitante"
+${usuario.tipoUsuario === "Visitante" ? "selected" : ""}>
+
+Visitante
+
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+<div class="mb-2">
+
+<label>Telefone</label>
+
+<input
+class="form-control"
+id="edit-telefone"
+value="${usuario.telefone}">
+
+</div>
+
+
+
+
+<div class="mb-2">
+
+<label>Registro</label>
+
+<input
+class="form-control"
+id="edit-registro"
+value="${usuario.registro}">
+
+</div>
+
+
+
+<div class="mb-2">
+
+<label>Nova senha</label>
+
+<input
+type="password"
+class="form-control"
+id="edit-senha">
+
+</div>
+
+
+
+<div class="mb-3">
+
+<label>Confirmar senha</label>
+
+<input
+type="password"
+class="form-control"
+id="edit-confirmar-senha">
+
+</div>
+
+
+
+<button
+class="btn btn-success"
+onclick="salvarEdicaoPerfil()">
+
+Salvar
+
+</button>
+
+
+<button
+class="btn btn-secondary"
+onclick="cancelarEdicaoPerfil()">
+
+Cancelar
+
+</button>
+
+`;
+
+
+form.style.display =
+"block";
+
 
 });
 
+
+
+// cancelar edição
+
 function cancelarEdicaoPerfil(){
 
-    document.getElementById("formPerfil").style.display = "none";
-    document.getElementById("dadosPerfil").style.display = "block";
+
+document.getElementById("formPerfil")
+.style.display =
+"none";
+
+
+document.getElementById("dadosPerfil")
+.style.display =
+"block";
+
 
 }
+
+// ======================================================
+// SALVAR EDIÇÃO
+// ======================================================
+
 
 async function salvarEdicaoPerfil(){
 
-    const nome = document.getElementById("edit-nome").value;
-    const telefone = document.getElementById("edit-telefone").value;
-    const registro = document.getElementById("edit-registro").value;
-    const senha = document.getElementById("edit-senha").value;
-    const confirmarSenha = document.getElementById("edit-confirmar-senha").value;
 
-    if(!nome){
-        alert("O nome não pode ficar vazio.");
+    const nome =
+    document.getElementById("edit-nome").value;
+
+
+    const email =
+    document.getElementById("edit-email").value;
+
+
+    const telefone =
+    document.getElementById("edit-telefone").value;
+
+
+    const registro =
+    document.getElementById("edit-registro").value;
+
+
+    const tipoUsuario =
+    document.getElementById("edit-tipoUsuario").value;
+
+
+    const senha =
+    document.getElementById("edit-senha").value;
+
+
+    const confirmarSenha =
+    document.getElementById("edit-confirmar-senha").value;
+
+
+
+    // valida campos obrigatórios
+
+    if(!nome || !email){
+
+
+        alert("Nome e email são obrigatórios!");
+
+
         return;
+
+
     }
+
+
+
+    // valida senha
 
     if(senha && senha !== confirmarSenha){
+
+
         alert("As senhas não coincidem.");
+
+
         return;
+
+
     }
 
-    const corpo = { nome, telefone, registro };
+
+
+    // Dados enviados para API
+
+    const corpo = {
+
+
+        nome,
+
+        email,
+
+        telefone,
+
+        registro,
+
+        tipoUsuario
+
+
+    };
+
+
+
+    // Só envia senha se preencher
+
     if(senha){
-        corpo.senha = senha;
+
+
+        corpo.senha =
+        senha;
+
+
     }
 
-    try {
 
-        const resposta = await fetch(
+
+    try{
+
+
+        const resposta =
+        await fetch(
+
             `${API_BASE}/usuarios/${encodeURIComponent(usuario.cpf)}`,
+
             {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(corpo)
+
+                method:"PUT",
+
+
+                headers:{
+
+                    "Content-Type":"application/json"
+
+                },
+
+
+                body:
+                JSON.stringify(corpo)
+
+
+            }
+
+        );
+
+
+
+        if(!resposta.ok){
+
+
+            const dados =
+            await resposta.json();
+
+
+
+            alert(
+
+                dados.erro ||
+
+                "Erro ao atualizar perfil."
+
+            );
+
+
+
+            return;
+
+
+        }
+
+
+
+        // Atualiza sessão local
+
+        usuario.nome =
+        nome;
+
+
+        usuario.email =
+        email;
+
+
+        usuario.telefone =
+        telefone;
+
+
+        usuario.registro =
+        registro;
+
+
+        usuario.tipoUsuario =
+        tipoUsuario;
+
+
+
+        localStorage.setItem(
+
+            "usuarioLogado",
+
+            JSON.stringify(usuario)
+
+        );
+
+
+
+        preencherPerfil();
+
+
+        cancelarEdicaoPerfil();
+
+
+
+        alert(
+
+            "Perfil atualizado com sucesso!"
+
+        );
+
+
+
+    }catch(erro){
+
+
+        alert(
+
+            "Não foi possível conectar ao servidor."
+
+        );
+
+
+    }
+
+
+}
+
+// ======================================================
+// ESTATÍSTICAS DO PERFIL
+// ======================================================
+
+
+async function carregarEstatisticas(){
+
+
+    if(!usuario){
+
+        return;
+
+    }
+
+
+    try{
+
+
+        const [
+            respPostagens,
+            respNotificacoes
+        ] = await Promise.all([
+
+
+            fetch(
+                `${API_BASE}/postagens?cpf=${encodeURIComponent(usuario.cpf)}`
+            ),
+
+
+            fetch(
+                `${API_BASE}/notificacoes/${encodeURIComponent(usuario.cpf)}`
+            )
+
+
+        ]);
+
+
+
+        const postagens =
+        await respPostagens.json();
+
+
+        const notificacoes =
+        await respNotificacoes.json();
+
+
+
+        // total de postagens
+
+        document.getElementById("qtdPostagens").textContent =
+        postagens.length;
+
+
+
+        // objetos devolvidos
+
+        const devolvidos =
+        postagens.filter(post =>
+
+            post.status_postagem === "Devolvido"
+
+        );
+
+
+        document.getElementById("qtdDevolvidos").textContent =
+        devolvidos.length;
+
+
+
+        // notificações
+
+        document.getElementById("qtdNotificacoes").textContent =
+        notificacoes.length;
+
+
+
+    }catch(erro){
+
+
+        console.log(
+            "Erro ao carregar estatísticas:",
+            erro
+        );
+
+
+    }
+
+
+}
+
+
+
+// chama automaticamente
+
+carregarEstatisticas();
+
+// ======================================================
+// SAIR DO SISTEMA
+// ======================================================
+
+
+document
+.getElementById("btnSair")
+.addEventListener("click", async function(){
+
+
+    try{
+
+
+        // avisa o backend que saiu
+        await fetch(
+            `${API_BASE}/logout`,
+            {
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:
+                JSON.stringify({
+
+                    cpf:usuario.cpf
+
+                })
+
             }
         );
 
-        if(!resposta.ok){
-            const dados = await resposta.json();
-            alert(dados.erro || "Não foi possível salvar as alterações.");
-            return;
-        }
 
-        // Atualiza a sessão local com os novos dados
-        usuario.nome = nome;
-        usuario.telefone = telefone;
-        usuario.registro = registro;
-        localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+    }catch(erro){
 
-        preencherPerfil();
-        cancelarEdicaoPerfil();
 
-        alert("Perfil atualizado com sucesso!");
+        console.log(
+            "Erro no logout:",
+            erro
+        );
 
-    } catch(erro){
-
-        alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
 
     }
-}
+
+
+    // limpa sessão do navegador
+
+    localStorage.removeItem(
+        "usuarioLogado"
+    );
+
+
+    // volta para o feed
+
+    window.location.href =
+    "/html/index.html";
+
+
+});
 
 // ======================================================
 // EXCLUIR CONTA
 // ======================================================
 
-document.getElementById("btnExcluirConta")
+document
+.getElementById("btnExcluirConta")
 .addEventListener("click", async function(){
 
-    const confirmar = confirm(
+
+    const confirmar =
+    confirm(
         "Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita."
     );
 
+
     if(!confirmar){
+
         return;
+
     }
 
-    try {
 
-        const resposta = await fetch(
+    try{
+
+
+        // tenta excluir o usuário primeiro
+
+        const resposta =
+        await fetch(
             `${API_BASE}/usuarios/${encodeURIComponent(usuario.cpf)}`,
-            { method: "DELETE" }
+            {
+                method:"DELETE"
+            }
         );
 
+
+
+        // se o banco bloquear por FK
+
         if(!resposta.ok){
-            const dados = await resposta.json();
-            alert(dados.erro || "Não foi possível excluir a conta.");
+
+
+            const dados =
+            await resposta.json();
+
+
+            const apagar =
+            confirm(
+                dados.erro +
+                "\n\nDeseja excluir suas conversas e tentar novamente?"
+            );
+
+
+
+            if(apagar){
+
+
+                await fetch(
+                    `${API_BASE}/conversas/usuario/${encodeURIComponent(usuario.cpf)}`,
+                    {
+                        method:"DELETE"
+                    }
+                );
+
+
+                alert(
+                    "Conversas removidas. Clique em excluir conta novamente."
+                );
+
+
+            }
+
+
             return;
+
+
         }
 
-        localStorage.removeItem("usuarioLogado");
 
-        alert("Conta excluída com sucesso!");
 
-        window.location.href = "/html/login.html";
+        // se conseguiu excluir
 
-    } catch(erro){
+        localStorage.removeItem(
+            "usuarioLogado"
+        );
 
-        alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
+
+        alert(
+            "Conta excluída com sucesso!"
+        );
+
+
+        window.location.href =
+        "/html/login.html";
+
+
+
+    }catch(erro){
+
+
+        alert(
+            "Não foi possível conectar ao servidor."
+        );
+
 
     }
 
-});
-
-// Evento do botão "Sair"
-document.getElementById("btnSair")
-.addEventListener("click", async function () {
-
-    // Avisa a API para encerrar a sessão no banco
-    // (permite que a notificação de login volte a disparar)
-    if(usuario){
-        try {
-            await fetch(`${API_BASE}/logout`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cpf: usuario.cpf })
-            });
-        } catch(erro){
-            // segue o logout mesmo se a API estiver fora do ar
-        }
-    }
-
-    // Remove os dados da sessão
-    localStorage.removeItem("usuarioLogado");
-
-    // Retorna para a página inicial
-    window.location.href = "/html/index.html";
 
 });
-
-// ======================================
-// ESTATÍSTICAS DO PERFIL (via API)
-// ======================================
-
-async function carregarEstatisticas(){
-
-    if(!usuario) return;
-
-    const [respPostagens, respNotificacoes] = await Promise.all([
-        fetch(`${API_BASE}/postagens?cpf=${encodeURIComponent(usuario.cpf)}`),
-        fetch(`${API_BASE}/notificacoes/${encodeURIComponent(usuario.cpf)}`)
-    ]);
-
-    const postagens = await respPostagens.json();
-    const notificacoes = await respNotificacoes.json();
-
-    // Quantidade total de postagens
-    document.getElementById("qtdPostagens").textContent =
-    postagens.length;
-
-    // Quantidade de objetos devolvidos
-    const devolvidos = postagens.filter(post =>
-        post.status_postagem === "Devolvido"
-    );
-
-    document.getElementById("qtdDevolvidos").textContent =
-    devolvidos.length;
-
-    // Quantidade de notificações
-    document.getElementById("qtdNotificacoes").textContent =
-    notificacoes.length;
-
-}
-
-carregarEstatisticas();
-

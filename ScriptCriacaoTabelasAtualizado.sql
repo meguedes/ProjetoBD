@@ -105,21 +105,58 @@ CREATE TABLE Postagem (
 
 -- Conversa
 CREATE TABLE Conversa (
-    id_conversa  SERIAL PRIMARY KEY,
-    id_post      INT NOT NULL,
+
+    id_conversa SERIAL PRIMARY KEY,
+
+    id_post INT NOT NULL,
+
+    cpf_criador VARCHAR(14) NOT NULL,
+
+    cpf_interessado VARCHAR(14) NOT NULL,
+
     data_criacao TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (id_post) REFERENCES Postagem(id_post) ON DELETE RESTRICT
+
+
+    FOREIGN KEY (id_post)
+    REFERENCES Postagem(id_post)
+    ON DELETE RESTRICT,
+
+
+    FOREIGN KEY (cpf_criador)
+    REFERENCES Usuario(cpf),
+
+
+    FOREIGN KEY (cpf_interessado)
+    REFERENCES Usuario(cpf),
+
+
+    -- impede criar duas conversas iguais
+    UNIQUE(id_post, cpf_interessado)
+
 );
 
 -- Mensagem
 CREATE TABLE Mensagem (
+
     id_mensagem SERIAL PRIMARY KEY,
+
     id_conversa INT NOT NULL,
-    cpf         VARCHAR(14) NOT NULL,
-    conteudo    TEXT NOT NULL,
-    data_hora   TIMESTAMP NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (id_conversa) REFERENCES Conversa(id_conversa) ON DELETE RESTRICT,
-    FOREIGN KEY (cpf)         REFERENCES Usuario(cpf)
+
+    cpf_remetente VARCHAR(14) NOT NULL,
+
+    conteudo TEXT NOT NULL,
+
+    data_envio TIMESTAMP NOT NULL DEFAULT NOW(),
+
+
+    FOREIGN KEY (id_conversa)
+    REFERENCES Conversa(id_conversa)
+    ON DELETE RESTRICT,
+
+
+    FOREIGN KEY (cpf_remetente)
+    REFERENCES Usuario(cpf)
+
 );
 
 -- Notificacao
@@ -293,6 +330,134 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE PROCEDURE proc_criar_conversa(
+
+    p_id_post INT,
+
+    p_cpf_interessado VARCHAR
+
+)
+
+LANGUAGE plpgsql
+
+AS $$
+
+
+DECLARE
+
+    v_dono VARCHAR(14);
+
+
+BEGIN
+
+
+    -- descobre o dono da postagem
+
+    SELECT cpf
+    INTO v_dono
+
+    FROM Postagem
+
+    WHERE id_post = p_id_post;
+
+
+
+    IF v_dono IS NULL THEN
+
+        RAISE EXCEPTION
+        'Postagem não encontrada';
+
+    END IF;
+
+
+
+    -- evita conversa consigo mesmo
+
+    IF v_dono = p_cpf_interessado THEN
+
+        RAISE EXCEPTION
+        'Você não pode conversar com sua própria postagem';
+
+    END IF;
+
+
+
+    -- cria apenas se não existir
+
+    INSERT INTO Conversa(
+
+        id_post,
+
+        cpf_criador,
+
+        cpf_interessado
+
+    )
+
+    VALUES(
+
+        p_id_post,
+
+        v_dono,
+
+        p_cpf_interessado
+
+    )
+
+
+    ON CONFLICT
+    (id_post, cpf_interessado)
+
+    DO NOTHING;
+
+
+END;
+
+$$;
+
+CREATE OR REPLACE PROCEDURE proc_enviar_mensagem(
+
+    p_id_conversa INT,
+
+    p_cpf VARCHAR,
+
+    p_texto TEXT
+
+)
+
+LANGUAGE plpgsql
+
+AS $$
+
+
+BEGIN
+
+
+    INSERT INTO Mensagem(
+
+        id_conversa,
+
+        cpf_remetente,
+
+        conteudo
+
+    )
+
+    VALUES(
+
+        p_id_conversa,
+
+        p_cpf,
+
+        p_texto
+
+    );
+
+
+END;
+
+$$;
+
 -- ---------------------------------------------------------------------
 -- 4) FUNCTIONS
 -- ---------------------------------------------------------------------
@@ -359,6 +524,62 @@ AS $$
      WHERE c.nome_categoria ILIKE p_categoria;
 $$;
 
+CREATE OR REPLACE FUNCTION fn_notificar_mensagem()
+RETURNS TRIGGER AS $$
+
+DECLARE
+
+    v_destinatario VARCHAR(14);
+
+BEGIN
+
+
+    SELECT 
+        CASE
+
+            WHEN NEW.cpf_remetente = c.cpf_criador
+            THEN c.cpf_interessado
+
+            ELSE c.cpf_criador
+
+        END
+
+    INTO v_destinatario
+
+    FROM Conversa c
+
+    WHERE c.id_conversa = NEW.id_conversa;
+
+
+
+    INSERT INTO Notificacao(
+        cpf,
+        mensagem,
+        status_leitura
+    )
+
+    VALUES(
+
+        v_destinatario,
+
+        'Você recebeu uma nova mensagem.',
+
+        'Não lida'
+
+    );
+
+
+    RETURN NEW;
+
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+
+
+
+
 -- ---------------------------------------------------------------------
 -- 5) TRIGGERS (DROP antes de criar para o script ser reexecutável)
 -- ---------------------------------------------------------------------
@@ -374,6 +595,14 @@ CREATE TRIGGER tg_processar_devolucao
 AFTER INSERT ON Devolucao
 FOR EACH ROW
 EXECUTE FUNCTION fn_processar_devolucao();
+
+DROP TRIGGER IF EXISTS tg_nova_mensagem 
+ON Mensagem;
+CREATE TRIGGER tg_nova_mensagem
+AFTER INSERT
+ON Mensagem
+FOR EACH ROW
+EXECUTE FUNCTION fn_notificar_mensagem();
 
 -- ---------------------------------------------------------------------
 -- 6) VIEWS
@@ -445,3 +674,159 @@ INSERT INTO Categoria_objeto (nome_categoria) VALUES
     ('Acessórios'),
     ('Material Escolar'),
     ('Outro');
+
+-- =====================================================================
+-- 8) TESTES DE APRESENTAÇÃO
+-- Roteiro pensado para cobrir, em ordem, cada item exigido na
+-- apresentação em sala:
+--   - banco criado com pelo menos 5 registros por tabela principal
+--   - CRUD completo em >= 3 tabelas relacionadas (Usuario, Postagem, Objeto)
+--   - view funcionando
+--   - procedure funcionando
+--   - trigger funcionando
+--   - inserção de dado binário (foto em BYTEA)
+-- Bloco autossuficiente: roda direto depois das seções 1-7 num banco
+-- recém-criado (os IDs abaixo assumem sequences resetadas do zero pelos
+-- DROPs do início do script).
+-- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- 8.1) CREATE - 5 usuários (procedure proc_cadastrar_usuario)
+-- ---------------------------------------------------------------------
+CALL proc_cadastrar_usuario('11111111111', 'Ana Souza',   'ana.souza@aluno.unb.br',   '20230011', '61999990001', 'senha123', 'Aluno');
+CALL proc_cadastrar_usuario('22222222222', 'Bruno Lima',  'bruno.lima@aluno.unb.br',  '20230012', '61999990002', 'senha123', 'Aluno');
+CALL proc_cadastrar_usuario('33333333333', 'Carla Dias',  'carla.dias@unb.br',        '20230013', '61999990003', 'senha123', 'Professor');
+CALL proc_cadastrar_usuario('44444444444', 'Diego Alves', 'diego.alves@aluno.unb.br', '20230014', '61999990004', 'senha123', 'Aluno');
+CALL proc_cadastrar_usuario('55555555555', 'Elisa Rocha', 'elisa.rocha@unb.br',       '20230015', '61999990005', 'senha123', 'Servidor');
+
+SELECT * FROM Usuario;  -- 5 registros
+
+-- ---------------------------------------------------------------------
+-- 8.2) CREATE - 5 localizações (ligadas aos 4 campi já semeados)
+-- ---------------------------------------------------------------------
+INSERT INTO Localizacao (id_campi, descricao) VALUES
+    (1, 'Biblioteca Central (BCE)'),
+    (1, 'Restaurante Universitário (RU)'),
+    (2, 'Bloco A - FGA'),
+    (3, 'Bloco B - FCE'),
+    (4, 'Bloco Central - FUP');
+
+SELECT * FROM Localizacao;  -- 5 registros
+
+-- ---------------------------------------------------------------------
+-- 8.3) CREATE - 5 postagens (proc_registrar_postagem grava em Objeto +
+-- Postagem na mesma transação: mostra a procedure funcionando e o
+-- relacionamento entre 3 tabelas: Usuario -> Postagem -> Objeto)
+-- ---------------------------------------------------------------------
+CALL proc_registrar_postagem('11111111111', 1, 'Fone de Ouvido Bluetooth', 'Preto',  'Único',   'Encontrado próximo à cantina do ICC',   1, 'Encontrado');
+CALL proc_registrar_postagem('22222222222', 3, 'Mochila Azul',             'Azul',   'Médio',   'Perdida na saída do RU',                2, 'Perdido');
+CALL proc_registrar_postagem('33333333333', 2, 'Carteira de Documentos',   'Marrom', 'Pequeno', 'Encontrada no Bloco A da FGA',          3, 'Encontrado');
+CALL proc_registrar_postagem('44444444444', 5, 'Óculos de Sol',            'Preto',  'Único',   'Perdido no Bloco B da FCE',             4, 'Perdido');
+CALL proc_registrar_postagem('55555555555', 6, 'Calculadora Científica',   'Cinza',  'Pequeno', 'Encontrada no bloco central da FUP',    5, 'Encontrado');
+
+SELECT * FROM Objeto;    -- 5 registros
+SELECT * FROM Postagem;  -- 5 registros
+
+-- ---------------------------------------------------------------------
+-- 8.4) READ - junção das 3 tabelas relacionadas (Usuario + Postagem + Objeto)
+-- ---------------------------------------------------------------------
+SELECT p.id_post, u.nome AS autor, o.nome_obj, p.tipo_postagem, p.status_postagem
+  FROM Postagem p
+  JOIN Usuario u ON u.cpf = p.cpf
+  JOIN Objeto  o ON o.id_obj = p.id_obj
+ ORDER BY p.id_post;
+
+-- ---------------------------------------------------------------------
+-- 8.5) UPDATE - procedures de edição + update direto de status
+-- ---------------------------------------------------------------------
+CALL proc_editar_usuario('55555555555', 'Elisa Rocha Martins', '61999990099', '20230015');
+SELECT nome, telefone FROM Usuario WHERE cpf = '55555555555';
+
+CALL proc_editar_objeto(4, 'Óculos de Sol Ray-Ban', 'Preto Fosco', 'Único', 'Perdido no Bloco B da FCE, armação preta fosca');
+SELECT nome_obj, cor, descricao FROM Objeto WHERE id_obj = 4;
+
+UPDATE Postagem SET status_postagem = 'Em contato' WHERE id_post = 2;
+SELECT id_post, status_postagem FROM Postagem WHERE id_post = 2;
+
+-- ---------------------------------------------------------------------
+-- 8.6) INSERÇÃO DE DADO BINÁRIO - anexa uma foto (PNG) ao objeto 1 via
+-- proc_anexar_foto_objeto. O literal abaixo é um PNG 1x1 válido
+-- codificado em base64: não depende de nenhum arquivo externo, então
+-- roda igual em qualquer máquina do grupo.
+-- ---------------------------------------------------------------------
+CALL proc_anexar_foto_objeto(
+    1,
+    decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+        'base64'
+    )
+);
+
+SELECT id_obj, nome_obj, (foto_obj IS NOT NULL) AS tem_foto, length(foto_obj) AS tamanho_bytes
+  FROM Objeto
+ WHERE id_obj = 1;
+
+-- ---------------------------------------------------------------------
+-- 8.7) TRIGGER 1 - tg_usuario_autenticado (login gera notificação)
+-- ---------------------------------------------------------------------
+UPDATE Usuario SET tipo_usuario = TRUE WHERE cpf = '11111111111';
+SELECT tipo_usuario FROM Usuario WHERE cpf = '11111111111';
+SELECT * FROM Notificacao WHERE cpf = '11111111111';  -- "Login realizado com sucesso!"
+
+-- ---------------------------------------------------------------------
+-- 8.8) TRIGGER 2 - tg_processar_devolucao (devolução fecha a postagem
+-- e notifica o dono)
+-- ---------------------------------------------------------------------
+CALL proc_registrar_devolucao(3, '11111111111', 'Carteira devolvida na portaria da FGA.');
+SELECT id_post, status_postagem FROM Postagem WHERE id_post = 3;  -- vira 'Devolvido'
+SELECT * FROM Notificacao WHERE cpf = '33333333333' ORDER BY data_hora DESC;  -- dono da postagem 3
+
+-- ---------------------------------------------------------------------
+-- 8.9) TRIGGER 3 + CRUD em Conversa/Mensagem - proc_criar_conversa,
+-- proc_enviar_mensagem e tg_nova_mensagem (mensagem gera notificação)
+-- ---------------------------------------------------------------------
+CALL proc_criar_conversa(2, '44444444444');  -- Diego acha a mochila e entra em contato com Bruno (dono da postagem 2)
+SELECT * FROM Conversa;  -- id_conversa = 1
+
+CALL proc_enviar_mensagem(1, '44444444444', 'Oi, acho que encontrei sua mochila azul perto do RU. Ainda está perdida?');
+CALL proc_enviar_mensagem(1, '22222222222', 'Oi! Sim, ainda estou procurando. Podemos combinar de buscar no RU?');
+
+SELECT m.id_mensagem, u.nome AS remetente, m.conteudo, m.data_envio
+  FROM Mensagem m
+  JOIN Usuario u ON u.cpf = m.cpf_remetente
+ WHERE m.id_conversa = 1
+ ORDER BY m.data_envio;
+
+SELECT * FROM Notificacao WHERE cpf IN ('22222222222', '44444444444') ORDER BY data_hora DESC;
+
+-- ---------------------------------------------------------------------
+-- 8.10) VIEWS
+-- ---------------------------------------------------------------------
+SELECT * FROM vw_perfil_publico;
+
+SELECT id_post, autor, nome_obj, campus, status_postagem
+  FROM vw_feed_completo
+ ORDER BY id_post;
+
+SELECT id_post, status_postagem
+  FROM vw_itens_pendentes
+ ORDER BY id_post;  -- não deve trazer id_post = 3 (já devolvido)
+
+-- ---------------------------------------------------------------------
+-- 8.11) DELETE - remove uma postagem sem devolução/conversa vinculada
+-- (mesmo fluxo do DELETE /api/postagens/<id> em app.py: apaga a
+-- Postagem e depois o Objeto associado a ela)
+-- ---------------------------------------------------------------------
+DELETE FROM Postagem WHERE id_post = 5;
+DELETE FROM Objeto   WHERE id_obj  = 5;
+SELECT * FROM Postagem WHERE id_post = 5;  -- vazio: confirma a exclusão
+
+-- ---------------------------------------------------------------------
+-- 8.12) BÔNUS - integridade referencial (PK x FK): a Postagem 3 tem uma
+-- Devolucao vinculada (sem ON DELETE) e o Postgres recusa a exclusão
+-- direta - é preciso remover a devolução antes (proc_remover_devolucao).
+-- Descomente a linha abaixo para ver o erro de violação de FK.
+-- ---------------------------------------------------------------------
+-- DELETE FROM Postagem WHERE id_post = 3;  -- ERRO: violates foreign key constraint
+CALL proc_remover_devolucao(3);
+SELECT id_post, status_postagem FROM Postagem WHERE id_post = 3;  -- volta para 'Aberta'

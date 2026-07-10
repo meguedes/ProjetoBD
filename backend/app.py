@@ -139,51 +139,233 @@ def logout():
     return jsonify({"ok": True})
 
 
+
 @app.put("/api/usuarios/<cpf>")
 def editar_usuario(cpf):
+
     dados = request.get_json(force=True)
 
-    if not dados.get("nome"):
-        return jsonify({"erro": "Campo obrigatório: nome"}), 400
 
-    senha_hash = generate_password_hash(dados["senha"]) if dados.get("senha") else None
+    if not dados.get("nome"):
+
+        return jsonify(
+            {"erro":"Campo obrigatório: nome"}
+        ),400
+
 
     conn = get_conn()
+
+
     try:
+
         with conn.cursor() as cur:
-            cur.execute(
-                "CALL proc_editar_usuario(%s, %s, %s, %s, %s)",
-                (cpf, dados["nome"], dados.get("telefone"), dados.get("registro"), senha_hash),
-            )
+
+
+            # se veio senha nova
+            if dados.get("senha"):
+
+
+                senha_hash = generate_password_hash(
+                    dados["senha"]
+                )
+
+
+                cur.execute(
+                    """
+                    UPDATE Usuario
+
+                    SET nome=%s,
+                        email=%s,
+                        telefone=%s,
+                        registro_institucional=%s,
+                        perfil=%s,
+                        senha=%s
+
+                    WHERE cpf=%s
+                    """,
+
+                    (
+                        dados["nome"],
+                        dados["email"],
+                        dados.get("telefone"),
+                        dados.get("registro"),
+                        dados.get("tipoUsuario"),
+                        senha_hash,
+                        cpf
+                    )
+                )
+
+
+            else:
+
+
+                cur.execute(
+                    """
+                    UPDATE Usuario
+
+                    SET nome=%s,
+                        email=%s,
+                        telefone=%s,
+                        registro_institucional=%s,
+                        perfil=%s
+
+                    WHERE cpf=%s
+                    """,
+
+                    (
+                        dados["nome"],
+                        dados["email"],
+                        dados.get("telefone"),
+                        dados.get("registro"),
+                        dados.get("tipoUsuario"),
+                        cpf
+                    )
+                )
+
+
+
+            if cur.rowcount == 0:
+
+                return jsonify(
+                    {"erro":"Usuário não encontrado"}
+                ),404
+
+
+
         conn.commit()
-        return jsonify({"ok": True})
-    except psycopg.errors.RaiseException:
+
+
+        return jsonify(
+            {"ok":True}
+        )
+
+
+    except Exception as erro:
+
+
         conn.rollback()
-        return jsonify({"erro": "Usuário não encontrado"}), 404
+
+
+        return jsonify(
+            {"erro":str(erro)}
+        ),400
+
+
     finally:
+
         conn.close()
 
+# =====================================================
+# EXCLUIR USUÁRIO
+# =====================================================
 
 @app.delete("/api/usuarios/<cpf>")
 def excluir_usuario(cpf):
-    conn = get_conn()
-    try:
-        with conn.cursor() as cur:
-            cur.execute("DELETE FROM Usuario WHERE cpf = %s", (cpf,))
-            if cur.rowcount == 0:
-                conn.rollback()
-                return jsonify({"erro": "Usuário não encontrado"}), 404
-        conn.commit()
-        return jsonify({"ok": True})
-    except psycopg.errors.ForeignKeyViolation:
-        conn.rollback()
-        return jsonify({
-            "erro": "Não é possível excluir: existem postagens, mensagens ou devoluções "
-                    "associadas a esta conta. Exclua suas postagens antes de excluir a conta."
-        }), 409
-    finally:
-        conn.close()
 
+    conn = get_conn()
+
+    try:
+
+        with conn.cursor() as cur:
+
+            # "Excluir conta" apaga tudo que pertence a este usuário e que
+            # nao tem ON DELETE CASCADE (mensagens/conversas próprias ou de
+            # postagens próprias, devoluções feitas ou recebidas em
+            # postagens próprias, e as próprias postagens/objetos) antes do
+            # Usuario - sem isso as FKs sempre bloqueiam o DELETE abaixo.
+            cur.execute(
+                """
+                DELETE FROM Mensagem
+                WHERE cpf_remetente = %s
+                   OR id_conversa IN (
+                        SELECT id_conversa FROM Conversa
+                         WHERE cpf_criador = %s OR cpf_interessado = %s
+                            OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                   )
+                """,
+                (cpf, cpf, cpf, cpf),
+            )
+
+            cur.execute(
+                """
+                DELETE FROM Conversa
+                WHERE cpf_criador = %s OR cpf_interessado = %s
+                   OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                """,
+                (cpf, cpf, cpf),
+            )
+
+            cur.execute(
+                """
+                DELETE FROM Devolucao
+                WHERE cpf = %s
+                   OR id_post IN (SELECT id_post FROM Postagem WHERE cpf = %s)
+                """,
+                (cpf, cpf),
+            )
+
+            cur.execute(
+                "DELETE FROM Postagem WHERE cpf = %s RETURNING id_obj",
+                (cpf,),
+            )
+            id_objetos = [linha["id_obj"] for linha in cur.fetchall()]
+            if id_objetos:
+                cur.execute(
+                    "DELETE FROM Objeto WHERE id_obj = ANY(%s)",
+                    (id_objetos,),
+                )
+
+            cur.execute(
+                """
+                DELETE FROM Usuario
+                WHERE cpf = %s
+                """,
+                (cpf,)
+            )
+
+
+            if cur.rowcount == 0:
+
+
+                return jsonify(
+                    {
+                        "erro":"Usuário não encontrado"
+                    }
+                ),404
+
+
+
+        conn.commit()
+
+
+        return jsonify(
+            {
+                "mensagem":
+                "Usuário excluído com sucesso"
+            }
+        )
+
+
+
+    except Exception:
+
+
+        conn.rollback()
+
+
+        return jsonify(
+            {
+                "erro":
+                "Não é possível excluir: existem postagens, mensagens ou devoluções associadas a esta conta. Exclua seus vínculos antes de excluir a conta."
+            }
+        ),409
+
+
+
+    finally:
+
+
+        conn.close()
 
 @app.get("/api/perfil/<cpf>")
 def perfil_publico(cpf):
@@ -435,6 +617,287 @@ def listar_notificacoes(cpf):
         for linha in linhas
     ])
 
+@app.post("/api/conversas")
+def criar_conversa():
+
+    dados = request.get_json(force=True)
+
+    conn = get_conn()
+
+    try:
+        with conn.cursor() as cur:
+
+
+            cur.execute(
+                "CALL proc_criar_conversa(%s,%s)",
+                (
+                    dados["id_post"],
+                    dados["cpf"]
+                )
+            )
+
+
+            cur.execute(
+                """
+                SELECT id_conversa
+                FROM Conversa
+                WHERE id_post=%s
+                AND cpf_interessado=%s
+                """,
+                (
+                    dados["id_post"],
+                    dados["cpf"]
+                )
+            )
+
+
+            conversa = cur.fetchone()
+
+
+        conn.commit()
+
+        return jsonify(conversa)
+
+    except Exception as erro:
+
+        conn.rollback()
+
+        return jsonify(
+            {"erro": str(erro).strip()}
+        ), 400
+
+    finally:
+        conn.close()
+
+@app.get("/api/conversas/<int:id>/mensagens")
+def buscar_mensagens(id):
+
+    conn = get_conn()
+
+    try:
+        with conn.cursor() as cur:
+
+            cur.execute(
+                """
+                SELECT 
+
+                    m.cpf_remetente,
+
+                    u.nome,
+
+                    m.conteudo,
+
+                    m.data_envio
+
+
+                FROM Mensagem m
+
+
+                JOIN Usuario u
+                ON u.cpf = m.cpf_remetente
+
+
+                WHERE 
+                    m.id_conversa=%s
+
+
+                ORDER BY 
+                    m.data_envio
+
+                """,
+                (id,)
+            )
+
+            mensagens = cur.fetchall()
+
+
+        return jsonify(mensagens)
+
+
+    finally:
+        conn.close()
+
+
+@app.post("/api/mensagens")
+def enviar_mensagem():
+
+    dados = request.get_json(force=True)
+
+    conn = get_conn()
+
+    try:
+
+        with conn.cursor() as cur:
+
+            cur.execute(
+                "CALL proc_enviar_mensagem(%s,%s,%s)",
+                (
+                    dados["id_conversa"],
+                    dados["cpf"],
+                    dados["texto"]
+                )
+            )
+
+
+        conn.commit()
+
+        return jsonify({"ok":True})
+
+    except Exception as erro:
+
+        conn.rollback()
+
+        return jsonify(
+            {"erro": str(erro).strip()}
+        ), 400
+
+    finally:
+        conn.close()
+
+# =====================================================
+# EXCLUIR TODAS AS CONVERSAS DO USUÁRIO
+# =====================================================
+
+@app.delete("/api/conversas/usuario/<cpf>")
+def excluir_conversas_usuario(cpf):
+
+    conn = get_conn()
+
+    try:
+
+        with conn.cursor() as cur:
+
+
+            # pega conversas do usuário
+
+            cur.execute(
+                """
+                SELECT id_conversa
+                FROM Conversa
+                WHERE cpf_criador = %s
+                OR cpf_interessado = %s
+                """,
+                (cpf, cpf)
+            )
+
+
+            conversas = cur.fetchall()
+
+
+
+            # remove mensagens primeiro
+
+            for conversa in conversas:
+
+                cur.execute(
+                    """
+                    DELETE FROM Mensagem
+                    WHERE id_conversa = %s
+                    """,
+                    (conversa["id_conversa"],)
+                )
+
+
+
+            # remove conversas
+
+            cur.execute(
+                """
+                DELETE FROM Conversa
+                WHERE cpf_criador = %s
+                OR cpf_interessado = %s
+                """,
+                (cpf, cpf)
+            )
+
+
+
+        conn.commit()
+
+
+        return jsonify(
+            {"ok":True}
+        )
+
+
+    except Exception as erro:
+
+
+        conn.rollback()
+
+
+        return jsonify(
+            {"erro":str(erro)}
+        ),400
+
+
+    finally:
+
+        conn.close()
+
+@app.get("/api/conversas/usuario/<cpf>")
+def listar_conversas_usuario(cpf):
+
+    conn = get_conn()
+
+    try:
+
+        with conn.cursor() as cur:
+
+            cur.execute(
+                """
+                SELECT
+                    c.id_conversa,
+                    o.nome_obj,
+                    u.nome
+
+                FROM Conversa c
+
+                JOIN Postagem p
+                ON p.id_post = c.id_post
+
+                JOIN Objeto o
+                ON o.id_obj = p.id_obj
+
+                JOIN Usuario u
+                ON u.cpf =
+                CASE
+
+                    WHEN c.cpf_criador = %s
+                    THEN c.cpf_interessado
+
+                    ELSE c.cpf_criador
+
+                END
+
+                WHERE
+                    c.cpf_criador = %s
+                    OR c.cpf_interessado = %s
+
+                """,
+                (cpf, cpf, cpf)
+            )
+
+
+            dados = cur.fetchall()
+
+
+        return jsonify([
+
+            {
+                "id_conversa": item["id_conversa"],
+                "objeto": item["nome_obj"],
+                "usuario": item["nome"]
+            }
+
+            for item in dados
+
+        ])
+
+
+    finally:
+
+        conn.close()
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

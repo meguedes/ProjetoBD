@@ -1,114 +1,304 @@
 // =====================================================
-// CAPTURA DO FORMULÁRIO DE CADASTRO
+// CADASTRO / EDIÇÃO DE USUÁRIO
 // =====================================================
 
-// Obtém o formulário de cadastro de usuário pelo ID
-const form = document.getElementById("cadastroForm");
+
+// Verifica se abriu a tela em modo edição
+const modoEdicao =
+new URLSearchParams(window.location.search)
+.get("editar");
+
+
+// Recupera usuário logado
+const usuarioEditando =
+JSON.parse(
+    localStorage.getItem("usuarioLogado")
+);
+
 
 // =====================================================
-// EVENTO DE ENVIO DO FORMULÁRIO
+// PREENCHE CAMPOS QUANDO FOR EDIÇÃO
 // =====================================================
 
-// Executa quando o usuário clica no botão "Criar Conta"
-form.addEventListener("submit", async function(event){
+if(modoEdicao && usuarioEditando){
 
 
-// Impede o comportamento padrão do formulário
-// (recarregar a página após o envio)
-event.preventDefault();
+    document.querySelector('[name="nome"]').value =
+    usuarioEditando.nome;
 
-// =====================================================
-// CAPTURA DOS DADOS INFORMADOS PELO USUÁRIO
-// =====================================================
 
-// Nome completo do usuário
-const nome = document.querySelector('[name="nome"]').value;
+    document.querySelector('[name="email"]').value =
+    usuarioEditando.email;
 
-// E-mail utilizado para login e contato
-const email = document.querySelector('[name="email"]').value;
 
-// CPF do usuário
-const cpf = document.querySelector('[name="cpf"]').value;
+    document.querySelector('[name="cpf"]').value =
+    usuarioEditando.cpf;
 
-// Telefone para contato
-const telefone = document.querySelector('[name="telefone"]').value;
 
-// Tipo de vínculo com a universidade
-const tipoUsuario = document.querySelector('[name="tipo_usuario"]').value;
+    document.querySelector('[name="telefone"]').value =
+    usuarioEditando.telefone;
 
-// Registro institucional (matrícula ou SIAPE)
-const registro = document.querySelector('[name="registro"]').value;
 
-// Senha escolhida pelo usuário
-const senha = document.querySelector('[name="senha"]').value;
+    document.querySelector('[name="registro"]').value =
+    usuarioEditando.registro;
 
-// Campo de confirmação da senha
-const confirmarSenha = document.querySelector('[name="confirmar_senha"]').value;
 
-// =====================================================
-// VALIDAÇÃO DAS SENHAS
-// =====================================================
+    // CPF e email normalmente não são editados
+    document.querySelector('[name="cpf"]').disabled = true;
 
-// Verifica se a senha e a confirmação são iguais
-if(senha !== confirmarSenha){
+    document.querySelector('[name="email"]').disabled = true;
 
-    // Exibe mensagem de erro
-    alert("As senhas não coincidem!");
 
-    // Interrompe a execução
-    return;
 }
 
-// =====================================================
-// CRIAÇÃO DO OBJETO USUÁRIO
-// =====================================================
-
-// Agrupa todas as informações do usuário em um objeto
-const usuario = {
-
-    cpf,
-    nome,
-    email,
-    registro,
-    telefone,
-    tipoUsuario,
-    senha
-};
 
 // =====================================================
-// ENVIO DOS DADOS PARA A API (PERSISTÊNCIA NO POSTGRESQL)
+// FORMULÁRIO
 // =====================================================
 
-try {
+const form =
+document.getElementById("cadastroForm");
 
-    const resposta = await fetch(`${API_BASE}/usuarios`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(usuario)
-    });
 
-    const dados = await resposta.json();
 
-    if(!resposta.ok){
-        alert(dados.erro || "Não foi possível criar a conta.");
+form.addEventListener(
+"submit",
+
+async function(event){
+
+
+event.preventDefault();
+
+
+// =====================================================
+// CAPTURA DOS CAMPOS
+// =====================================================
+
+
+const nome =
+document.querySelector('[name="nome"]').value;
+
+
+const email =
+modoEdicao
+? usuarioEditando.email
+: document.querySelector('[name="email"]').value;
+
+
+const cpf =
+modoEdicao
+? usuarioEditando.cpf
+: document.querySelector('[name="cpf"]').value;
+
+
+const telefone =
+document.querySelector('[name="telefone"]').value;
+
+
+const tipoUsuario =
+document.querySelector('[name="tipo_usuario"]').value;
+
+
+const registro =
+document.querySelector('[name="registro"]').value;
+
+
+const senha =
+document.querySelector('[name="senha"]').value;
+
+
+const confirmarSenha =
+document.querySelector('[name="confirmar_senha"]').value;
+
+
+
+// =====================================================
+// VALIDAÇÃO DE SENHA
+// =====================================================
+
+
+// No cadastro a senha é obrigatória.
+// Na edição pode ficar vazia.
+
+if(!modoEdicao || senha){
+
+
+    if(senha !== confirmarSenha){
+
+
+        alert("As senhas não coincidem!");
+
+
         return;
+
     }
 
-    // =====================================================
-    // CONFIRMAÇÃO DE CADASTRO
-    // =====================================================
+}
 
-    alert("Conta criada com sucesso!");
 
-    // =====================================================
-    // REDIRECIONAMENTO PARA LOGIN
-    // =====================================================
 
-    window.location.href = "/html/login.html";
+// =====================================================
+// OBJETO USUÁRIO
+// =====================================================
 
-} catch(erro){
 
-    alert("Não foi possível conectar ao servidor. Verifique se a API está rodando.");
+const usuario = {
+
+
+    cpf,
+
+    nome,
+
+    email,
+
+    registro,
+
+    telefone,
+
+    tipoUsuario,
+
+    senha
+
+
+};
+
+
+
+// =====================================================
+// DEFINE SE É POST OU PUT
+// =====================================================
+
+
+let url =
+`${API_BASE}/usuarios`;
+
+
+let metodo =
+"POST";
+
+
+
+if(modoEdicao){
+
+
+    url =
+    `${API_BASE}/usuarios/${cpf}`;
+
+
+    metodo =
+    "PUT";
+
+
+}
+
+
+
+// =====================================================
+// ENVIA PARA API
+// =====================================================
+
+
+try{
+
+
+    const resposta =
+    await fetch(
+        url,
+        {
+
+            method: metodo,
+
+
+            headers:{
+
+                "Content-Type":"application/json"
+
+            },
+
+
+            body:
+            JSON.stringify(usuario)
+
+        }
+    );
+
+
+
+    const dados =
+    await resposta.json();
+
+
+
+    if(!resposta.ok){
+
+
+        alert(
+            dados.erro ||
+            "Não foi possível salvar."
+        );
+
+
+        return;
+
+
+    }
+
+
+
+    // =================================================
+    // SE FOR EDIÇÃO ATUALIZA LOCALSTORAGE
+    // =================================================
+
+
+    if(modoEdicao){
+
+
+        usuarioEditando.nome =
+        nome;
+
+
+        usuarioEditando.telefone =
+        telefone;
+
+
+        usuarioEditando.registro =
+        registro;
+
+
+        localStorage.setItem(
+            "usuarioLogado",
+            JSON.stringify(usuarioEditando)
+        );
+
+
+        alert("Perfil atualizado com sucesso!");
+
+
+        window.location.href =
+        "/html/perfil.html";
+
+
+    }else{
+
+
+        alert("Conta criada com sucesso!");
+
+
+        window.location.href =
+        "/html/login.html";
+
+
+    }
+
+
+
+}catch(erro){
+
+
+    alert(
+        "Não foi possível conectar ao servidor."
+    );
+
 
 }
 

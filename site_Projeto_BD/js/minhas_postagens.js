@@ -85,7 +85,7 @@ async function carregarPostagens(){
             </p>
 
             <a
-                href="/html/conversas.html"
+                href="/html/conversas.html?id_post=${post.id_post}"
                 class="btn btn-primary">
 
                 Ver Conversas

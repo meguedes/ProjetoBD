@@ -1,3 +1,4 @@
+
 // ======================================================
 // SISTEMA UNB - ACHADOS E PERDIDOS
 // Página Inicial (Feed)
@@ -143,6 +144,8 @@ if(postagens.length === 0){
     // --------------------------------------------------
 
     postagens.forEach(post =>{
+        console.log("POST:", post);
+        console.log("LINK:", `/html/conversas.html?id_post=${post.id_post}`);
 
         let botoesUsuario;
 
@@ -196,12 +199,16 @@ if(postagens.length === 0){
 
         }else{
 
+            const linkConversa =
+            `/html/conversas.html?id_post=${post.id_post}`;
+
+
             botoesUsuario = `
 
                 <div class="mt-3">
 
                     <a
-                        href="/html/conversas.html"
+                        href="${linkConversa}"
                         class="btn btn-premium">
 
                         Conversar
@@ -211,6 +218,9 @@ if(postagens.length === 0){
                 </div>
 
             `;
+
+
+            console.log("BOTÃO CRIADO:", linkConversa);
 
         }
 
